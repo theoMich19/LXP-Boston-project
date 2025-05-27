@@ -8,7 +8,6 @@ import {
     X,
     Loader2
 } from 'lucide-react';
-import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useAddressSearch } from "@/hooks/useAddressSearch";
 import { Address } from "@/types/adress";
