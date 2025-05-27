@@ -7,8 +7,8 @@ export default function Home() {
 
 
   return (
-    <Card className={`p-6 max-w-2xl mx-auto`}>
-      <Input />
+    <Card className={`flex gap-4 p-6 container mx-auto`}>
+      <Input className="max-w-[30%]" />
       <AdressSearchInput />
       <Button>Rechercher</Button>
     </Card>
