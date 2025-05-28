@@ -47,11 +47,10 @@ interface AddressResult {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    console.log(searchParams.get("q"), "tests");
     const query = searchParams.get("q");
     const limit = parseInt(searchParams.get("limit") || "5");
-    const state = searchParams.get("state") || "MA"; // Massachusetts par défaut
-    const city = searchParams.get("city") || "Boston"; // Boston par défaut
+    const state = searchParams.get("state") || "MA";
+    const city = searchParams.get("city") || "Boston";
 
     if (!query || query.length < 3) {
       return NextResponse.json(
@@ -60,7 +59,6 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Construction de la requête avec focus sur Boston/Massachusetts
     const searchQuery = `${query}, ${city}, ${state}, USA`;
 
     const nominatimUrl = new URL("https://nominatim.openstreetmap.org/search");
@@ -71,14 +69,11 @@ export async function GET(request: NextRequest) {
     nominatimUrl.searchParams.set("addressdetails", "1");
     nominatimUrl.searchParams.set("accept-language", "en");
 
-    // Priorité sur les adresses de Boston/Massachusetts
     nominatimUrl.searchParams.set("bounded", "1");
     nominatimUrl.searchParams.set(
       "viewbox",
       "-71.191155,42.227925,-70.986365,42.396671"
-    ); // Boston bounding box
-
-    console.log("Searching:", nominatimUrl.toString());
+    );
 
     const response = await fetch(nominatimUrl.toString(), {
       headers: {
