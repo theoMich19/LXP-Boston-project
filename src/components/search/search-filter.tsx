@@ -187,7 +187,6 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
                     className="absolute top-full right-0 mt-2 w-80 p-4 shadow-xl z-50 max-h-96 overflow-y-auto"
                 >
                     <div className="space-y-4">
-                        {/* Header */}
                         <div className="flex items-center justify-between border-b border-border pb-2">
                             <h3 className="text-sm font-semibold text-foreground">Filters</h3>
                             <Button
@@ -200,7 +199,6 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
                             </Button>
                         </div>
 
-                        {/* Salary Range */}
                         <div className="space-y-2">
                             <div className="flex items-center space-x-2 text-xs font-medium text-foreground">
                                 <DollarSign className="h-3 w-3 text-primary" />
@@ -228,12 +226,10 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
                             </div>
                         </div>
 
-                        {/* Filter Categories */}
                         {Object.entries(filterCategories).map(([key, category]) =>
                             renderFilterSection(key, category)
                         )}
 
-                        {/* Actions */}
                         <div className="flex space-x-2 pt-3 border-t border-border">
                             <Button
                                 variant="outline"

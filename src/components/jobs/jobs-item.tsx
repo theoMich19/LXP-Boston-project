@@ -43,10 +43,10 @@ export const JobItem: React.FC<JobItemProps> = ({
     return (
         <Card className="p-6 hover:shadow-lg transition-all duration-200 border border-border hover:border-primary/20">
             <div className="space-y-4">
-                {/* Header */}
                 <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-4 flex-1">
-                        <Avatar className="h-12 w-12 bg-primary/10 text-primary font-semibold"
+                        <Avatar
+                            className="h-12 w-12 bg-primary/10 text-primary font-semibold"
                         />
                         <div className="flex-1 min-w-0">
                             <h3 className="text-lg font-semibold text-foreground hover:text-primary cursor-pointer transition-colors line-clamp-1">
@@ -107,7 +107,6 @@ export const JobItem: React.FC<JobItemProps> = ({
                         </div>
                     )}
 
-                    {/* Missing Skills */}
                     {missing_skills.length > 0 && (
                         <div>
                             <div className="flex items-center space-x-2 mb-2">
@@ -136,7 +135,6 @@ export const JobItem: React.FC<JobItemProps> = ({
                     )}
                 </div>
 
-                {/* Actions */}
                 <div className="flex items-center justify-between pt-4 border-t border-border">
                     <div className="flex items-center space-x-2">
                         <Badge
