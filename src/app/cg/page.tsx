@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { toastUtils, showApiError, showSaveSuccess } from '@/utils/toast';
 
-import JobMatchLogo from '@/components/logo/animated-logo';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -96,7 +95,6 @@ const DesignSystemShowcase = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-primary-50 via-background to-accent/5">
             <div className="container mx-auto px-4 py-8 max-w-6xl">
-                <JobMatchLogo size="md" animation="shimmer" onClick={() => { }} />
 
                 {/* Header */}
                 <div className="text-center mb-12">
