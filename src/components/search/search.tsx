@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import {
-    Search,
     MapPin,
     Check,
     X,
@@ -74,7 +73,7 @@ const AdressSearchInput = () => {
     return (
         <div className="relative w-full">
             <div className="relative" ref={inputRef}>
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
                 <Input
                     type="text"
                     value={searchQuery}
@@ -84,7 +83,7 @@ const AdressSearchInput = () => {
                             setShowDropdown(true);
                         }
                     }}
-                    placeholder={"Rechercher une adresse..."}
+                    placeholder={"Localisation"}
                     className={`pl-10 pr-10 ${selectedAddress ? 'border-success' : ''}`}
                     aria-label="Recherche d'adresse"
                     autoComplete="off"
