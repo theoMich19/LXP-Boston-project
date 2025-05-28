@@ -46,9 +46,7 @@ export const JobItem: React.FC<JobItemProps> = ({
                 {/* Header */}
                 <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-4 flex-1">
-                        <Avatar
-                            fallback={getCompanyInitials(company_name)}
-                            className="h-12 w-12 bg-primary/10 text-primary font-semibold"
+                        <Avatar className="h-12 w-12 bg-primary/10 text-primary font-semibold"
                         />
                         <div className="flex-1 min-w-0">
                             <h3 className="text-lg font-semibold text-foreground hover:text-primary cursor-pointer transition-colors line-clamp-1">
