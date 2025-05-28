@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useState } from 'react';
 import { toastUtils, showApiError, showSaveSuccess } from '@/utils/toast';
 
 import { Button } from '@/components/ui/button';
@@ -44,10 +43,9 @@ const testToast = () => {
 
 
 const DesignSystemShowcase = () => {
-    const [isLoading, setIsLoading] = useState(false);
 
-    const MatchingScore = ({ score, className = '' }) => {
-        const getScoreColor = (score) => {
+    const MatchingScore = ({ score = 0, className = '' }) => {
+        const getScoreColor = (score: number) => {
             if (score >= 80) return 'text-success';
             if (score >= 60) return 'text-warning';
             return 'text-destructive';
@@ -102,6 +100,9 @@ const DesignSystemShowcase = () => {
                     <p className="text-muted-foreground text-lg">
                         Charte graphique et composants réutilisables
                     </p>
+                </div>
+                <div className='mx-auto'>
+                    <Button onClick={() => testToast()}>Toast </Button>
                 </div>
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-6">🎨 Palette de couleurs</h2>
@@ -206,7 +207,7 @@ const DesignSystemShowcase = () => {
                         </div>
 
                         <div className="mt-6">
-                            <h4 className="font-medium mb-3">Exemples d'usage :</h4>
+                            <h4 className="font-medium mb-3">Exemples d&apos;usage :</h4>
                             <div className="flex flex-wrap gap-2">
                                 <Badge >React</Badge>
                                 <Badge variant="outline">TypeScript</Badge>
@@ -315,7 +316,7 @@ const DesignSystemShowcase = () => {
 
                     <div className="space-y-4">
                         <Alert title="Information">
-                            Ceci est une alerte d'information par défaut.
+                            Ceci est une alerte d&apos;information par défaut.
                         </Alert>
 
                         <Alert title="Succès">
@@ -387,7 +388,7 @@ const DesignSystemShowcase = () => {
                 </section>
 
                 <section className="mb-12">
-                    <h2 className="text-2xl font-bold mb-6">💼 Exemples d'usage</h2>
+                    <h2 className="text-2xl font-bold mb-6">💼 Exemples d&apos;usage</h2>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <Card className="p-6">
