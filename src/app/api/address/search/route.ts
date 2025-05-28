@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
 
     const response = await fetch(nominatimUrl.toString(), {
       headers: {
-        "User-Agent": "JobMatch/1.0 (Boston Address Search)",
+        "User-Agent": "TalentBridge/1.0 (Boston Address Search)",
       },
     });
 
@@ -106,7 +106,6 @@ export async function GET(request: NextRequest) {
       type: result.type,
     }));
 
-    // Filtrer et trier par pertinence pour Boston
     const bostonAddresses = addresses
       .filter(
         (addr) =>
