@@ -95,18 +95,14 @@ const DesignSystemShowcase = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-primary-50 via-background to-accent/5">
             <div className="container mx-auto px-4 py-8 max-w-6xl">
-
-                {/* Header */}
                 <div className="text-center mb-12">
                     <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">
-                        Design System - JobMatch
+                        Design System - TalentBridge
                     </h1>
                     <p className="text-muted-foreground text-lg">
                         Charte graphique et composants réutilisables
                     </p>
                 </div>
-
-                {/* Palette de couleurs */}
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-6">🎨 Palette de couleurs</h2>
 
@@ -161,7 +157,6 @@ const DesignSystemShowcase = () => {
                     </div>
                 </section>
 
-                {/* Boutons */}
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-6">🔘 Boutons</h2>
 
@@ -194,12 +189,10 @@ const DesignSystemShowcase = () => {
                             <Button><Search className="h-4 w-4 mr-2" />Rechercher</Button>
                             <Button variant="outline"><Heart className="h-4 w-4 mr-2" />Favoris</Button>
                             <Button variant="success"><Send className="h-4 w-4 mr-2" />Envoyer</Button>
-                            {/* <Button disabled><LoadingSpinner size="sm" className="mr-2" />Chargement...</Button> */}
                         </div>
                     </Card>
                 </section>
 
-                {/* Badges */}
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-6">🏷️ Badges</h2>
 
@@ -225,7 +218,6 @@ const DesignSystemShowcase = () => {
                     </Card>
                 </section>
 
-                {/* Avatars */}
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-6">👤 Avatars</h2>
 
@@ -254,7 +246,6 @@ const DesignSystemShowcase = () => {
                     </Card>
                 </section>
 
-                {/* Cards */}
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-6">📄 Cards</h2>
 
@@ -283,7 +274,6 @@ const DesignSystemShowcase = () => {
                     </div>
                 </section>
 
-                {/* Inputs */}
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-6">📝 Inputs</h2>
 
@@ -294,7 +284,6 @@ const DesignSystemShowcase = () => {
                     </Card>
                 </section>
 
-                {/* Progress Bars */}
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-6">📊 Barres de progression</h2>
 
@@ -308,7 +297,6 @@ const DesignSystemShowcase = () => {
                     </Card>
                 </section>
 
-                {/* Matching Scores */}
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-6">🎯 Scores de matching</h2>
 
@@ -322,7 +310,6 @@ const DesignSystemShowcase = () => {
                     </Card>
                 </section>
 
-                {/* Alerts */}
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-6">⚠️ Alertes</h2>
 
@@ -340,12 +327,11 @@ const DesignSystemShowcase = () => {
                         </Alert>
 
                         <Alert title="Erreur">
-                            Une erreur s'est produite lors de l'envoi du formulaire.
+                            Une erreur s&apos;est produite lors de l&apos;envoi du formulaire.
                         </Alert>
                     </div>
                 </section>
 
-                {/* Loading States */}
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-6">⏳ États de chargement</h2>
 
@@ -366,7 +352,6 @@ const DesignSystemShowcase = () => {
                     </div>
                 </section>
 
-                {/* Icônes */}
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-6">🎨 Icônes courantes</h2>
 
@@ -401,16 +386,14 @@ const DesignSystemShowcase = () => {
                     </Card>
                 </section>
 
-                {/* Exemples d'usage */}
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-6">💼 Exemples d'usage</h2>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {/* Carte d'emploi */}
                         <Card className="p-6">
                             <div className="flex items-start justify-between mb-4">
                                 <div className="flex items-start space-x-3">
-                                    <Avatar fallback="TC" />
+                                    <Avatar />
                                     <div>
                                         <h3 className="font-semibold text-primary hover:underline cursor-pointer">
                                             Développeur React Senior
@@ -460,7 +443,6 @@ const DesignSystemShowcase = () => {
                             </div>
                         </Card>
 
-                        {/* Stats Dashboard */}
                         <div className="space-y-4">
                             <Card className="p-4">
                                 <div className="flex items-center justify-between">
