@@ -1,6 +1,7 @@
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Header from "@/components/header/header";
+import "../globals.css";
 
 export default function RootLayout({
   children,
