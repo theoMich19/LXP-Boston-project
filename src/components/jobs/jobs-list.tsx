@@ -51,7 +51,7 @@ export const JobsList: React.FC<ListJobsProps> = ({
         );
     }
 
-    if (!jobsData || jobsData.matches.length === 0) {
+    if (!jobsData || jobsData.data.length === 0) {
         return (
             <div className="w-full max-w-[70%]">
                 <Card className="p-12 text-center">
@@ -99,9 +99,9 @@ export const JobsList: React.FC<ListJobsProps> = ({
             </div>
 
             <div className="space-y-4">
-                {jobsData.matches.map((job) => (
+                {jobsData.data.map((job) => (
                     <JobItem
-                        key={job.job_id}
+                        key={job.id}
                         job={job}
                         userSkills={jobsData.user_skills}
                         onViewDetails={onViewDetails}
@@ -111,7 +111,7 @@ export const JobsList: React.FC<ListJobsProps> = ({
                 ))}
             </div>
 
-            {jobsData.total_matches > jobsData.matches.length && (
+            {jobsData.total_matches > jobsData.data.length && (
                 <div className="text-center pt-6">
                     <Button variant="outline" size="lg">
                         Load More Jobs

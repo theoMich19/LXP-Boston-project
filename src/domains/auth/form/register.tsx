@@ -20,7 +20,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         email: '',
         password: '',
         confirmPassword: '',
-        acceptTerms: false
     });
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -97,6 +96,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                 if (result.token) {
                     localStorage.setItem('auth_token', result.token);
                 }
+
+                onSwitchToLogin()
 
             } catch (error) {
                 console.error('Erreur lors de l\'inscription:', error);

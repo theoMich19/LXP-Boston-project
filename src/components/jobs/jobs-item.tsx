@@ -8,13 +8,12 @@ import { CompatibilityScore } from "./jobs-item-score";
 
 export const JobItem: React.FC<JobItemProps> = ({
     job,
-    userSkills,
     onViewDetails,
     onApply,
     onToggleFavorite
 }) => {
     const {
-        job_id,
+        id,
         title,
         company_name,
         compatibility_score,
@@ -22,7 +21,7 @@ export const JobItem: React.FC<JobItemProps> = ({
         missing_skills,
         salary_min,
         salary_max,
-        description_preview
+        description
     } = job;
 
     const formatSalary = (min: string, max: string) => {
@@ -72,15 +71,17 @@ export const JobItem: React.FC<JobItemProps> = ({
                             </div>
                         </div>
                     </div>
-                    <CompatibilityScore score={compatibility_score} />
+                    {
+                        compatibility_score && <CompatibilityScore score={compatibility_score} />
+                    }
                 </div>
 
                 <div className="text-sm text-muted-foreground line-clamp-2">
-                    {description_preview}
+                    {description}
                 </div>
 
                 <div className="space-y-3">
-                    {matched_skills.length > 0 && (
+                    {matched_skills && matched_skills.length > 0 && (
                         <div>
                             <div className="flex items-center space-x-2 mb-2">
                                 <Star className="h-4 w-4 text-success" />
@@ -107,7 +108,7 @@ export const JobItem: React.FC<JobItemProps> = ({
                         </div>
                     )}
 
-                    {missing_skills.length > 0 && (
+                    {missing_skills && missing_skills.length > 0 && (
                         <div>
                             <div className="flex items-center space-x-2 mb-2">
                                 <AlertCircle className="h-4 w-4 text-warning" />
@@ -136,21 +137,24 @@ export const JobItem: React.FC<JobItemProps> = ({
                 </div>
 
                 <div className="flex items-center justify-between pt-4 border-t border-border">
-                    <div className="flex items-center space-x-2">
-                        <Badge
-                            variant={compatibility_score >= 70 ? "default" : compatibility_score >= 40 ? "secondary" : "outline"}
-                            className="text-xs"
-                        >
-                            {compatibility_score >= 70 ? "Excellent Match" :
-                                compatibility_score >= 40 ? "Good Match" : "Partial Match"}
-                        </Badge>
-                    </div>
+                    {
+                        compatibility_score ?
+                            <div className="flex items-center space-x-2">
+                                <Badge
+                                    variant={compatibility_score >= 70 ? "default" : compatibility_score >= 40 ? "secondary" : "outline"}
+                                    className="text-xs"
+                                >
+                                    {compatibility_score >= 70 ? "Excellent Match" :
+                                        compatibility_score >= 40 ? "Good Match" : "Partial Match"}
+                                </Badge>
+                            </div> : <div></div>
+                    }
 
                     <div className="flex space-x-2">
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => onViewDetails?.(job_id)}
+                            onClick={() => onViewDetails?.(id)}
                             className="flex items-center space-x-1"
                         >
                             <Eye className="h-4 w-4" />
@@ -158,7 +162,7 @@ export const JobItem: React.FC<JobItemProps> = ({
                         </Button>
                         <Button
                             size="sm"
-                            onClick={() => onApply?.(job_id)}
+                            onClick={() => onApply?.(id)}
                             className="flex items-center space-x-1"
                         >
                             <Send className="h-4 w-4" />

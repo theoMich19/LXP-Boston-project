@@ -22,9 +22,9 @@ export const registerUser = async (data: RegisterSubmitData) => {
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorData.error || errorMessage;
-      } catch (e) {}
-
-      throw new Error(errorMessage);
+      } catch (e) {
+        throw new Error(errorMessage);
+      }
     }
 
     const result = await response.json();

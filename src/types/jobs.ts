@@ -1,18 +1,18 @@
 export interface JobMatch {
-  job_id: number;
+  id: number;
   title: string;
   company_name: string;
   company_id: number;
-  compatibility_score: number;
-  matched_skills: string[];
-  missing_skills: string[];
+  compatibility_score?: number;
+  matched_skills?: string[];
+  missing_skills?: string[];
   salary_min: string;
   salary_max: string;
-  description_preview: string;
+  description: string;
 }
 
 export interface JobsData {
-  matches: JobMatch[];
+  data: JobMatch[];
   total_matches: number;
   user_skills: string[];
   message: string;
@@ -32,4 +32,11 @@ export interface ListJobsProps {
   onViewDetails?: (jobId: number) => void;
   onApply?: (jobId: number) => void;
   onToggleFavorite?: (jobId: number) => void;
+}
+
+export interface JobsApiResponse {
+  data: JobMatch[];
+  total_matches: number;
+  user_skills: string[];
+  message: string;
 }
