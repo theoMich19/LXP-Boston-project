@@ -9,6 +9,7 @@ import { loginSchema } from '../schema/login';
 import { loginUser } from '../server/login';
 import toastUtils from '@/utils/toast';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@/context/userContext';
 
 
 export const LoginForm: React.FC<LoginFormProps> = ({
@@ -23,6 +24,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [rememberMe, setRememberMe] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const { login } = useUser();
     const route = useRouter()
     const {
         errors,
@@ -66,13 +68,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
                 console.log('Connexion réussie:', result);
 
-                if (result.token || result.access_token) {
-                    const token = result.token || result.access_token;
-                    localStorage.setItem('auth_token', token);
-                }
-
-                if (result.user) {
-                    localStorage.setItem('user', JSON.stringify(result.user));
+                if (result.token && result.user) {
+                    login(result.user, result.token);
                 }
 
                 if (rememberMe) {

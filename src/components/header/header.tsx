@@ -3,11 +3,18 @@
 import { User } from "lucide-react";
 import { Button } from "../ui/button";
 import { usePathname, useRouter } from 'next/navigation'
+import { useUser } from "@/context/userContext";
 
 const Header = () => {
+    const { user, logout, isAuthenticated } = useUser();
     const pathname = usePathname()
     const route = useRouter()
-    const user = false
+
+    if (!isAuthenticated) {
+        route.push("/dashboard")
+    }
+
+
     if (pathname === "/auth") {
         return (
             <h1
@@ -30,20 +37,24 @@ const Header = () => {
                         </h1>
                     </div>
                     {
-                        user ?
+                        isAuthenticated ?
                             (
-                                <Button className="hidden md:flex" variant="ghost" size="icon" onClick={() => route.push('/profil')}>
-                                    <User className="h-5 w-5" />
-                                </Button>
+                                <div className="flex space-x-4">
+                                    <Button className="hidden md:flex " variant="ghost" onClick={() => route.push('/profile')}>
+                                        <User className="h-5 w-5" />
+                                        <span>Profile</span>
+                                    </Button>
+                                    <Button className="hover:shadow-sm hidden md:flex" onClick={() => logout()}>Logout</Button>
+                                </div>
                             ) :
                             (
-                                <Button className="hover:shadow-sm hidden md:flex" onClick={() => route.push('/auth')}>Se connecter</Button>
+                                <Button className="hover:shadow-sm hidden md:flex" onClick={() => route.push('/auth')}>Login</Button>
                             )
                     }
 
                 </div>
             </div>
-        </header>
+        </header >
     )
 }
 
