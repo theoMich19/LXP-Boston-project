@@ -1,6 +1,6 @@
 "use client"
 import { JobsList } from '@/components/jobs/jobs-list';
-import { FormSearch } from '@/domains/search/form/form-search';
+import { FormSearch } from '@/domains/jobs/form/form-search';
 
 export default function Home() {
   const mockJobsData = {
