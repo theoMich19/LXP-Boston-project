@@ -29,6 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <span>cocou</span>
         {children}
         <ToastContainer aria-label={undefined} />
       </body>
