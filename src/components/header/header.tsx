@@ -19,31 +19,6 @@ const Header = () => {
                             className="hover:cursor-pointer text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                             TalentBridge
                         </h1>
-                        <nav className="hidden md:flex space-x-6">
-                            <Button
-                                variant="link"
-                                onClick={() => route.push('/jobs')}
-                                className={`font-medium transition-colors hover:text-primary  ${pathname === '/jobs' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
-                                    }`}
-                            >
-                                Emplois
-                            </Button>
-                            <Button
-                                variant="link"
-                                onClick={() => route.push('/candidates')}
-                                className={`font-medium transition-colors hover:text-primary  ${pathname === '/candidates' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
-                                    }`}
-                            >
-                                Candidats
-                            </Button>
-                            <Button
-                                variant="link"
-                                onClick={() => route.push('/company')}
-                                className={`font-medium transition-colors hover:text-primary  ${pathname === '/company' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
-                                    }`}>
-                                Entreprises
-                            </Button>
-                        </nav>
                     </div>
                     {
                         user ?
