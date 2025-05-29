@@ -1,21 +1,17 @@
 import z from "zod";
 
-export const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, "L'email est requis")
-    .email("Veuillez entrer un email valide")
-    .max(100, "L'email ne peut pas dépasser 100 caractères"),
-  password: z
-    .string()
-    .min(1, "Le mot de passe est requis")
-    .min(6, "Le mot de passe doit contenir au moins 6 caractères")
-    .max(128, "Le mot de passe ne peut pas dépasser 128 caractères"),
-});
-
 export const registerSchema = z
   .object({
-    name: z
+    firstName: z
+      .string()
+      .min(1, "Le prénom est requis")
+      .min(2, "Le prénom doit contenir au moins 2 caractères")
+      .max(50, "Le prénom ne peut pas dépasser 50 caractères")
+      .regex(
+        /^[a-zA-ZÀ-ÿ\s\-']{2,}$/,
+        "Le prénom ne peut contenir que des lettres, espaces, tirets et apostrophes"
+      ),
+    lastName: z
       .string()
       .min(1, "Le nom est requis")
       .min(2, "Le nom doit contenir au moins 2 caractères")
@@ -53,3 +49,12 @@ export const registerSchema = z
     message: "Les mots de passe ne correspondent pas",
     path: ["confirmPassword"],
   });
+
+export const registerSubmitSchema = z.object({
+  email: z.string().email(),
+  first_name: z.string().min(2).max(50),
+  last_name: z.string().min(2).max(50),
+  password: z.string().min(8).max(128),
+  role: z.string().min(2).max(50),
+  company_id: z.string().min(2).max(50).nullable(),
+});

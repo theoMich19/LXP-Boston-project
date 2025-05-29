@@ -1,33 +1,33 @@
+"use client"
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useZodValidation } from "@/hooks/useZodValidationAuth";
-import { RegisterFormProps, RegisterFormData } from "@/types/auth";
+import { RegisterFormProps, RegisterFormData, RegisterSubmitData } from "@/types/auth";
 import { User, Mail, EyeOff, Eye, Check, X, Loader2, Shield, ArrowRight, Lock } from "lucide-react";
 import { useState, useCallback, useMemo } from "react";
-import { registerSchema } from "../schema/schema";
+import { registerSchema } from "../schema/register";
 import { getPasswordStrength } from "@/utils/auth";
 import { Input } from "@/components/ui/input";
+import { registerUser } from "@/domains/auth/server/register";
 
 export const RegisterForm: React.FC<RegisterFormProps> = ({
     onSwitchToLogin,
-    isLoading,
-    onSubmit,
     className = ""
 }) => {
     const [formData, setFormData] = useState<RegisterFormData>({
-        name: '',
+        firstName: '',
+        lastName: '',
         email: '',
         password: '',
         confirmPassword: '',
         acceptTerms: false
     });
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
-    const [isDirty, setIsDirty] = useState<boolean>(false);
     const [focusedField, setFocusedField] = useState<string | null>(null);
 
-    // Utilisation du hook de validation Zod
     const {
         errors,
         isValidating,
@@ -37,18 +37,15 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         isValid
     } = useZodValidation(registerSchema, formData);
 
-    // Gestion des changements d'input
     const handleInputChange = useCallback((field: keyof RegisterFormData, value: string | boolean) => {
         setFormData(prev => ({ ...prev, [field]: value }));
-        setIsDirty(true);
         clearFieldError(field);
 
-        // Validation différée pour certains champs
         if (typeof value === 'string' && value.length > 0) {
             if (field === 'email' && value.includes('@')) {
                 setTimeout(() => validateField(field), 500);
             }
-            if (field === 'name' && value.length >= 2) {
+            if ((field === 'firstName' || field === 'lastName') && value.length >= 2) {
                 setTimeout(() => validateField(field), 300);
             }
             if (field === 'confirmPassword' && formData.password) {
@@ -57,7 +54,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         }
     }, [clearFieldError, validateField, formData.password]);
 
-    // Toggle des mots de passe
     const togglePasswordVisibility = useCallback(() => {
         setShowPassword(prev => !prev);
     }, []);
@@ -66,7 +62,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         setShowConfirmPassword(prev => !prev);
     }, []);
 
-    // Gestion du focus
     const handleFocus = useCallback((field: string) => {
         setFocusedField(field);
     }, []);
@@ -75,25 +70,42 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         setFocusedField(null);
     }, []);
 
-    // Soumission du formulaire
+
     const handleSubmit = useCallback(async () => {
         await validateAll();
 
         if (isValid) {
+            setIsLoading(true);
+            // setApiError(null);
+
             try {
-                const { confirmPassword, acceptTerms, ...submitData } = formData;
-                await onSubmit({
-                    name: submitData.name.trim(),
+                const { ...submitData } = formData;
+                const apiData: RegisterSubmitData = {
                     email: submitData.email.trim().toLowerCase(),
-                    password: submitData.password
-                });
+                    first_name: submitData.firstName.trim(),
+                    last_name: submitData.lastName.trim(),
+                    password: submitData.password,
+                    role: "candidate",
+                    company_id: null
+                };
+
+                const result = await registerUser(apiData);
+
+                console.log('Inscription réussie:', result);
+
+                if (result.token) {
+                    localStorage.setItem('auth_token', result.token);
+                }
+
             } catch (error) {
-                console.error('Erreur lors de la soumission:', error);
+                console.error('Erreur lors de l\'inscription:', error);
+                // setApiError(error.message || 'Une erreur est survenue');
+            } finally {
+                setIsLoading(false);
             }
         }
-    }, [formData, onSubmit, validateAll, isValid]);
+    }, [formData, validateAll, isValid]);
 
-    // Gestion des touches clavier
     const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
         if (event.key === 'Enter' && !isLoading) {
             event.preventDefault();
@@ -101,7 +113,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         }
     }, [handleSubmit, isLoading]);
 
-    // Calcul de la force du mot de passe
     const passwordStrength = useMemo(() =>
         getPasswordStrength(formData.password), [formData.password]
     );
@@ -118,6 +129,90 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
             </div>
 
             <div className="space-y-6" onKeyDown={handleKeyDown}>
+                <div className="flex flex-row sm:flex-col gap-4">
+                    <div className="space-y-2">
+                        <label
+                            htmlFor="register-firstName"
+                            className="text-sm font-medium text-foreground"
+                        >
+                            Prénom <span className="text-destructive">*</span>
+                        </label>
+                        <div className="relative">
+                            <User
+                                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 pointer-events-none"
+                                aria-hidden="true"
+                            />
+                            <Input
+                                id="register-firstName"
+                                type="text"
+                                placeholder="Prénom"
+                                value={formData.firstName}
+                                onChange={(e) => handleInputChange('firstName', e.target.value)}
+                                onFocus={() => handleFocus('firstName')}
+                                onBlur={handleBlur}
+                                className={`pl-10 transition-colors ${errors.firstName
+                                    ? 'border-destructive focus:border-destructive'
+                                    : 'focus:border-primary'
+                                    }`}
+                                disabled={isLoading}
+                                autoComplete="given-name"
+                                aria-invalid={!!errors.firstName}
+                                aria-describedby={errors.firstName ? "register-firstName-error" : undefined}
+                            />
+                        </div>
+                        {errors.firstName && (
+                            <p
+                                id="register-firstName-error"
+                                className="text-sm text-destructive animate-slide-up"
+                                role="alert"
+                            >
+                                {errors.firstName}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="space-y-2">
+                        <label
+                            htmlFor="register-lastName"
+                            className="text-sm font-medium text-foreground"
+                        >
+                            Nom <span className="text-destructive">*</span>
+                        </label>
+                        <div className="relative">
+                            <User
+                                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 pointer-events-none"
+                                aria-hidden="true"
+                            />
+                            <Input
+                                id="register-lastName"
+                                type="text"
+                                placeholder="Nom"
+                                value={formData.lastName}
+                                onChange={(e) => handleInputChange('lastName', e.target.value)}
+                                onFocus={() => handleFocus('lastName')}
+                                onBlur={handleBlur}
+                                className={`pl-10 transition-colors ${errors.lastName
+                                    ? 'border-destructive focus:border-destructive'
+                                    : 'focus:border-primary'
+                                    }`}
+                                disabled={isLoading}
+                                autoComplete="family-name"
+                                aria-invalid={!!errors.lastName}
+                                aria-describedby={errors.lastName ? "register-lastName-error" : undefined}
+                            />
+                        </div>
+                        {errors.lastName && (
+                            <p
+                                id="register-lastName-error"
+                                className="text-sm text-destructive animate-slide-up"
+                                role="alert"
+                            >
+                                {errors.lastName}
+                            </p>
+                        )}
+                    </div>
+                </div>
+
                 <div className="space-y-2">
                     <label
                         htmlFor="register-email"
@@ -322,51 +417,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                     )}
                 </div>
 
-                <div className="space-y-2">
-                    <label className="flex items-start space-x-3 text-sm cursor-pointer group">
-                        <div className="relative">
-                            <input
-                                type="checkbox"
-                                checked={formData.acceptTerms}
-                                onChange={(e) => handleInputChange('acceptTerms', e.target.checked)}
-                                className="rounded border-border text-primary focus:ring-primary focus:ring-offset-0 transition-colors mt-0.5"
-                                disabled={isLoading}
-                                aria-describedby={errors.acceptTerms ? "terms-error" : undefined}
-                            />
-                            {formData.acceptTerms && (
-                                <Check className="absolute inset-0 h-4 w-4 text-primary pointer-events-none" />
-                            )}
-                        </div>
-                        <span className="text-muted-foreground group-hover:text-foreground transition-colors">
-                            J&apos;accepte les{' '}
-                            <button
-                                type="button"
-                                className="text-primary hover:underline focus:outline-none focus:underline"
-                                onClick={() => console.log('Ouvrir les conditions')}
-                            >
-                                conditions d&apos;utilisation
-                            </button>
-                            {' '}et la{' '}
-                            <button
-                                type="button"
-                                className="text-primary hover:underline focus:outline-none focus:underline"
-                                onClick={() => console.log('Ouvrir la politique')}
-                            >
-                                politique de confidentialité
-                            </button>
-                            <span className="text-destructive ml-1">*</span>
-                        </span>
-                    </label>
-                    {errors.acceptTerms && (
-                        <p
-                            id="terms-error"
-                            className="text-sm text-destructive animate-slide-up ml-7"
-                            role="alert"
-                        >
-                            {errors.acceptTerms}
-                        </p>
-                    )}
-                </div>
 
                 <Button
                     type="button"
@@ -402,19 +452,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                     </button>
                 </p>
             </div>
-
-            {isDirty && (
-                <div className="mt-4 text-center">
-                    <div className={`inline-flex items-center px-3 py-2 rounded-full text-xs transition-all ${isValid
-                        ? 'bg-success/10 text-success border border-success/20'
-                        : 'bg-muted text-muted-foreground'
-                        }`}>
-                        <div className={`w-2 h-2 rounded-full mr-2 ${isValid ? 'bg-success' : 'bg-muted-foreground'
-                            }`} />
-                        {isValid ? 'Formulaire complet et valide' : 'Veuillez compléter tous les champs requis'}
-                    </div>
-                </div>
-            )}
         </Card>
     );
 };

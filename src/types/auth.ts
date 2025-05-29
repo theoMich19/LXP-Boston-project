@@ -1,17 +1,19 @@
-import { loginSchema, registerSchema } from "@/domains/auth/schema/schema";
+import { loginSchema } from "@/domains/auth/schema/login";
+import {
+  registerSchema,
+  registerSubmitSchema,
+} from "@/domains/auth/schema/register";
 import z from "zod";
 
 export interface LoginFormProps {
   onSwitchToRegister: () => void;
   isLoading: boolean;
-  onSubmit: (data: LoginFormData) => void | Promise<void>;
+  onSubmit: (data: LoginSubmitData) => void | Promise<void>;
   className?: string;
 }
 
 export interface RegisterFormProps {
   onSwitchToLogin: () => void;
-  isLoading: boolean;
-  onSubmit: (data: RegisterSubmitData) => void | Promise<void>;
   className?: string;
 }
 
@@ -35,7 +37,18 @@ export interface PasswordStrength {
 
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
-export type RegisterSubmitData = Omit<
-  RegisterFormData,
-  "confirmPassword" | "acceptTerms"
->;
+
+export type LoginSubmitData = LoginFormData;
+export type RegisterSubmitData = z.infer<typeof registerSubmitSchema>;
+
+export interface LoginSubmitDataExplicit {
+  email: string;
+  password: string;
+}
+
+export interface RegisterSubmitDataExplicit {
+  email: string;
+  first_name: string;
+  last_name: string;
+  password: string;
+}

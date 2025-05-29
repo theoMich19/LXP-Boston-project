@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { Alert } from '@/components/ui/alert';
 import { LoginForm } from '@/domains/auth/form/login';
 import { RegisterForm } from '@/domains/auth/form/register';
-import { loginSchema, registerSchema } from '@/domains/auth/schema/schema';
+import { loginSchema, registerSchema } from '@/domains/auth/schema/register';
 import { AuthPageProps, LoginFormData, RegisterSubmitData } from '@/types/auth';
 
 
@@ -64,55 +64,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ initialView = 'login' }) => {
         }
     }, []);
 
-    // Simulation d'appel API pour l'inscription
-    const handleRegister = useCallback(async (formData: RegisterSubmitData) => {
-        setIsLoading(true);
-        setAlert(null);
 
-        try {
-            // Validation supplémentaire côté client
-            const validatedData = registerSchema.omit({ confirmPassword: true, acceptTerms: true }).parse(formData);
-
-            // Simuler un appel API
-            await new Promise(resolve => setTimeout(resolve, 2500));
-
-            // Ici vous ajouterez votre vraie logique d'inscription
-            console.log('Register data:', validatedData);
-
-            // Simuler différents scénarios
-            if (validatedData.email === 'existing@email.com') {
-                throw new Error('Un compte avec cet email existe déjà');
-            }
-
-            setAlert({
-                type: 'success',
-                message: 'Compte créé avec succès ! Vous pouvez maintenant vous connecter.'
-            });
-
-            // Basculer vers le login après succès
-            setTimeout(() => {
-                setCurrentView('login');
-                setAlert(null);
-            }, 2500);
-
-        } catch (error) {
-            if (error instanceof z.ZodError) {
-                setAlert({
-                    type: 'error',
-                    message: 'Données invalides. Veuillez vérifier vos informations.'
-                });
-            } else {
-                setAlert({
-                    type: 'error',
-                    message: error instanceof Error ? error.message : 'Erreur lors de la création du compte. Veuillez réessayer.'
-                });
-            }
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
-
-    // Fonction pour changer de vue
     const switchToRegister = useCallback(() => {
         setCurrentView('register');
         setAlert(null);
@@ -154,8 +106,6 @@ const AuthPage: React.FC<AuthPageProps> = ({ initialView = 'login' }) => {
                 ) : (
                     <RegisterForm
                         onSwitchToLogin={switchToLogin}
-                        isLoading={isLoading}
-                        onSubmit={handleRegister}
                     />
                 )}
 

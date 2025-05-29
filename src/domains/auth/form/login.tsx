@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useZodValidation } from '@/hooks/useZodValidationAuth';
 import { LoginFormProps, LoginFormData } from '@/types/auth';
-import { loginSchema } from '../schema/schema';
+import { loginSchema } from '../schema/register';
 
 
 export const LoginForm: React.FC<LoginFormProps> = ({
