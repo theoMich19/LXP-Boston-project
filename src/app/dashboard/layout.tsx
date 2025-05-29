@@ -13,7 +13,7 @@ export default function RootLayout({
       <body>
         <Header />
         {children}
-        <ToastContainer aria-label={undefined} />
+        <ToastContainer aria-label={undefined} position="bottom-right" />
       </body>
     </html>
   );

@@ -91,6 +91,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
 
                 const result = await registerUser(apiData);
 
+                // TODO :  connexion directe ou affiche=age login?
                 console.log('Inscription réussie:', result);
 
                 if (result.token) {

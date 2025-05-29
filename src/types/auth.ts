@@ -7,8 +7,6 @@ import z from "zod";
 
 export interface LoginFormProps {
   onSwitchToRegister: () => void;
-  isLoading: boolean;
-  onSubmit: (data: LoginSubmitData) => void | Promise<void>;
   className?: string;
 }
 

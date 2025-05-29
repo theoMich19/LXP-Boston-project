@@ -5,13 +5,14 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useZodValidation } from '@/hooks/useZodValidationAuth';
 import { LoginFormProps, LoginFormData } from '@/types/auth';
-import { loginSchema } from '../schema/register';
+import { loginSchema } from '../schema/login';
+import { loginUser } from '../server/login';
+import toastUtils from '@/utils/toast';
+import { useRouter } from 'next/navigation';
 
 
 export const LoginForm: React.FC<LoginFormProps> = ({
     onSwitchToRegister,
-    isLoading,
-    onSubmit,
     className = ""
 }) => {
     const [formData, setFormData] = useState<LoginFormData>({
@@ -21,9 +22,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [rememberMe, setRememberMe] = useState<boolean>(false);
-    const [isDirty, setIsDirty] = useState<boolean>(false);
-
-    // Utilisation du hook de validation Zod
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const route = useRouter()
     const {
         errors,
         isValidating,
@@ -33,45 +33,76 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         isValid
     } = useZodValidation(loginSchema, formData);
 
-    // Gestion des changements d'input
     const handleInputChange = useCallback((field: keyof LoginFormData, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
-        setIsDirty(true);
         clearFieldError(field);
 
-        // Validation différée pour l'email
         if (field === 'email' && value.includes('@')) {
             setTimeout(() => validateField(field), 500);
         }
     }, [clearFieldError, validateField]);
 
-    // Toggle du mot de passe
     const togglePasswordVisibility = useCallback(() => {
         setShowPassword(prev => !prev);
     }, []);
 
-    // Toggle remember me
     const toggleRememberMe = useCallback(() => {
         setRememberMe(prev => !prev);
     }, []);
 
-    // Soumission du formulaire
     const handleSubmit = useCallback(async () => {
         await validateAll();
 
         if (isValid) {
+            setIsLoading(true);
+
             try {
-                await onSubmit({
+                const apiData = {
                     email: formData.email.trim().toLowerCase(),
                     password: formData.password
-                });
+                };
+
+                const result = await loginUser(apiData);
+
+                console.log('Connexion réussie:', result);
+
+                if (result.token || result.access_token) {
+                    const token = result.token || result.access_token;
+                    localStorage.setItem('auth_token', token);
+                }
+
+                if (result.user) {
+                    localStorage.setItem('user', JSON.stringify(result.user));
+                }
+
+                if (rememberMe) {
+                    localStorage.setItem('remember_me', 'true');
+                }
+                toastUtils.info("Connexion réussie")
+                route.push('/dashboard')
+
+
             } catch (error) {
-                console.error('Erreur lors de la soumission:', error);
+                console.error('Erreur lors de la connexion:', error);
+
+                let errorMessage = error.message || 'Une erreur est survenue';
+
+                if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+                    errorMessage = 'Email ou mot de passe incorrect';
+                } else if (error.message.includes('429')) {
+                    errorMessage = 'Trop de tentatives. Veuillez réessayer plus tard';
+                } else if (error.message.includes('500')) {
+                    errorMessage = 'Erreur serveur. Veuillez réessayer plus tard';
+                }
+
+                toastUtils.error(errorMessage)
+                // setApiError(errorMessage);
+            } finally {
+                setIsLoading(false);
             }
         }
-    }, [formData, onSubmit, validateAll, isValid]);
+    }, [formData, validateAll, isValid, rememberMe]);
 
-    // Gestion des touches clavier
     const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
         if (event.key === 'Enter' && !isLoading) {
             event.preventDefault();
@@ -238,18 +269,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                 </p>
             </div>
 
-            {isDirty && (
-                <div className="mt-4 text-center">
-                    <div className={`inline-flex items-center px-3 py-2 rounded-full text-xs transition-all ${isValid
-                        ? 'bg-success/10 text-success border border-success/20'
-                        : 'bg-muted text-muted-foreground'
-                        }`}>
-                        <div className={`w-2 h-2 rounded-full mr-2 ${isValid ? 'bg-success' : 'bg-muted-foreground'
-                            }`} />
-                        {isValid ? 'Formulaire valide' : 'Veuillez remplir tous les champs correctement'}
-                    </div>
-                </div>
-            )}
         </Card>
     );
 };
