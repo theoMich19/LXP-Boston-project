@@ -3,12 +3,28 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useZodValidation } from "@/hooks/useZodValidationAuth";
 import { RegisterFormProps, RegisterFormData, RegisterSubmitData } from "@/types/auth";
-import { User, Mail, EyeOff, Eye, Check, X, Loader2, Shield, ArrowRight, Lock } from "lucide-react";
+import { User, Mail, EyeOff, Eye, Check, X, Loader2, Shield, ArrowRight, Lock, UserCheck, Building } from "lucide-react";
 import { useState, useCallback, useMemo } from "react";
 import { registerSchema } from "../schema/register";
 import { getPasswordStrength } from "@/utils/auth";
 import { Input } from "@/components/ui/input";
 import { registerUser } from "@/domains/auth/server/register";
+
+// Définition des rôles disponibles
+const ROLES = [
+    {
+        value: 'candidate',
+        label: 'Candidat',
+        description: 'Je recherche un emploi',
+        icon: UserCheck
+    },
+    {
+        value: 'hr',
+        label: 'Recruteur',
+        description: 'Je recrute des talents',
+        icon: Building
+    }
+] as const;
 
 export const RegisterForm: React.FC<RegisterFormProps> = ({
     onSwitchToLogin,
@@ -19,12 +35,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         lastName: '',
         email: '',
         password: '',
-        confirmPassword: '',
+        role: 'candidate' // Valeur par défaut
     });
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+    // const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
     const [focusedField, setFocusedField] = useState<string | null>(null);
 
     const {
@@ -35,6 +51,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         clearFieldError,
         isValid
     } = useZodValidation(registerSchema, formData);
+    console.log("🚀 ~ isValid:", isValid)
+    console.log("🚀 ~ isValidating:", isValidating)
+    console.log("🚀 ~ errors:", errors)
+    console.log("🚀 ~ formData:", formData)
+    console.log("🚀 ~ registerSchema:", registerSchema)
 
     const handleInputChange = useCallback((field: keyof RegisterFormData, value: string | boolean) => {
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -47,19 +68,24 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
             if ((field === 'firstName' || field === 'lastName') && value.length >= 2) {
                 setTimeout(() => validateField(field), 300);
             }
-            if (field === 'confirmPassword' && formData.password) {
-                setTimeout(() => validateField(field), 300);
-            }
+            // if (field === 'confirmPassword' && formData.password) {
+            //     setTimeout(() => validateField(field), 300);
+            // }
         }
     }, [clearFieldError, validateField, formData.password]);
+
+    const handleRoleChange = useCallback((role: 'candidate' | 'hr') => {
+        setFormData(prev => ({ ...prev, role }));
+        clearFieldError('role');
+    }, [clearFieldError]);
 
     const togglePasswordVisibility = useCallback(() => {
         setShowPassword(prev => !prev);
     }, []);
 
-    const toggleConfirmPasswordVisibility = useCallback(() => {
-        setShowConfirmPassword(prev => !prev);
-    }, []);
+    // const toggleConfirmPasswordVisibility = useCallback(() => {
+    //     setShowConfirmPassword(prev => !prev);
+    // }, []);
 
     const handleFocus = useCallback((field: string) => {
         setFocusedField(field);
@@ -69,13 +95,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         setFocusedField(null);
     }, []);
 
-
     const handleSubmit = useCallback(async () => {
         await validateAll();
 
         if (isValid) {
             setIsLoading(true);
-            // setApiError(null);
 
             try {
                 const { ...submitData } = formData;
@@ -84,13 +108,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                     first_name: submitData.firstName.trim(),
                     last_name: submitData.lastName.trim(),
                     password: submitData.password,
-                    role: "candidate",
+                    role: submitData.role,
                     company_id: null
                 };
 
                 const result = await registerUser(apiData);
 
-                // TODO :  connexion directe ou affiche=age login?
                 console.log('Inscription réussie:', result);
 
                 if (result.token) {
@@ -101,7 +124,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
 
             } catch (error) {
                 console.error('Erreur lors de l\'inscription:', error);
-                // setApiError(error.message || 'Une erreur est survenue');
             } finally {
                 setIsLoading(false);
             }
@@ -131,6 +153,72 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
             </div>
 
             <div className="space-y-6" onKeyDown={handleKeyDown}>
+                {/* Sélection du rôle */}
+                <div className="space-y-3">
+                    <label className="text-sm font-medium text-foreground">
+                        Je suis <span className="text-destructive">*</span>
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                        {ROLES.map((role) => {
+                            const IconComponent = role.icon;
+                            const isSelected = formData.role === role.value;
+
+                            return (
+                                <button
+                                    key={role.value}
+                                    type="button"
+                                    onClick={() => handleRoleChange(role.value)}
+                                    className={`
+                                        relative p-4 border-2 rounded-lg transition-all duration-200 
+                                        hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
+                                        ${isSelected
+                                            ? 'border-primary bg-primary/5 shadow-sm'
+                                            : 'border-border hover:border-primary/50'
+                                        }
+                                    `}
+                                    disabled={isLoading}
+                                    aria-pressed={isSelected}
+                                    aria-describedby={`role-${role.value}-desc`}
+                                >
+                                    <div className="flex flex-col items-center space-y-2">
+                                        <IconComponent
+                                            className={`h-6 w-6 ${isSelected ? 'text-primary' : 'text-muted-foreground'
+                                                }`}
+                                        />
+                                        <div className="text-center">
+                                            <p className={`font-medium text-sm ${isSelected ? 'text-primary' : 'text-foreground'
+                                                }`}>
+                                                {role.label}
+                                            </p>
+                                            <p
+                                                id={`role-${role.value}-desc`}
+                                                className="text-xs text-muted-foreground mt-1"
+                                            >
+                                                {role.description}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Indicateur de sélection */}
+                                    {isSelected && (
+                                        <div className="absolute top-2 right-2">
+                                            <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                                                <Check className="w-2.5 h-2.5 text-primary-foreground" />
+                                            </div>
+                                        </div>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+                    {errors.role && (
+                        <p className="text-sm text-destructive animate-slide-up" role="alert">
+                            {errors.role}
+                        </p>
+                    )}
+                </div>
+
+                {/* Champs nom et prénom */}
                 <div className="flex flex-row sm:flex-col gap-4">
                     <div className="space-y-2">
                         <label
@@ -215,6 +303,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                     </div>
                 </div>
 
+                {/* Email */}
                 <div className="space-y-2">
                     <label
                         htmlFor="register-email"
@@ -256,6 +345,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                     )}
                 </div>
 
+                {/* Mot de passe */}
                 <div className="space-y-2">
                     <label
                         htmlFor="register-password"
@@ -349,7 +439,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                     )}
                 </div>
 
-                <div className="space-y-2">
+                {/* Confirmation mot de passe */}
+                {/* <div className="space-y-2">
                     <label
                         htmlFor="register-confirm-password"
                         className="text-sm font-medium text-foreground"
@@ -417,9 +508,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                             {errors.confirmPassword}
                         </p>
                     )}
-                </div>
+                </div> */}
 
-
+                {/* Bouton de soumission */}
                 <Button
                     type="button"
                     onClick={handleSubmit}
@@ -435,7 +526,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                     ) : (
                         <div className="flex items-center">
                             <Shield className="mr-2 h-4 w-4" />
-                            <span>Créer mon compte</span>
+                            <span>
+                                {formData.role === 'candidate' ? 'Créer mon profil candidat' : 'Créer mon espace recruteur'}
+                            </span>
                             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                         </div>
                     )}

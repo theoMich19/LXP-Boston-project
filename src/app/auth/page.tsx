@@ -18,19 +18,13 @@ const AuthPage: React.FC<AuthPageProps> = ({ initialView = 'login' }) => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-primary-50 via-background to-accent/5 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-primary-50 via-background to-accent/5 flex h-max-screen items-center justify-center">
             <div className="w-full max-w-md">
                 {currentView === 'login' ? (
                     <LoginForm onSwitchToRegister={switchToRegister} />
                 ) : (
                     <RegisterForm onSwitchToLogin={switchToLogin} />
                 )}
-
-                <div className="text-center mt-8">
-                    <p className="text-xs text-muted-foreground">
-                        © 2025 TalentBridge. Tous droits réservés.
-                    </p>
-                </div>
             </div>
         </div>
     );
