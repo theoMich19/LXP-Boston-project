@@ -7,14 +7,12 @@ import { useUser } from "@/context/userContext";
 
 const Header = () => {
     const { user, logout, isAuthenticated } = useUser();
-    console.log("🚀 ~ Header ~ user:", user)
-    console.log("🚀 ~ Header ~ isAuthenticated:", isAuthenticated)
     const pathname = usePathname()
     const route = useRouter()
 
-    // if (!isAuthenticated) {
-    //     route.push("/dashboard")
-    // }
+    if (!isAuthenticated && pathname === "/dashboard") {
+        route.push("/dashboard")
+    }
 
 
     if (pathname === "/auth") {

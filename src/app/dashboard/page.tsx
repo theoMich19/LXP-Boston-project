@@ -26,7 +26,6 @@ export default function Home() {
       }
 
       const data: JobsApiResponse = await response.json();
-      console.log("🚀 ~ fetchJobs ~ data:", data)
       setJobsData(data);
 
     } catch (err) {
@@ -43,18 +42,15 @@ export default function Home() {
   }, []);
 
   const handleViewDetails = (jobId: number) => {
-    console.log('View details for job:', jobId);
     // TODO: Navigation vers la page de détail du job
     // router.push(`/jobs/${jobId}`);
   };
 
   const handleApply = (jobId: number) => {
-    console.log('Apply to job:', jobId);
     // TODO: Logique de candidature
   };
 
   const handleToggleFavorite = (jobId: number) => {
-    console.log('Toggle favorite for job:', jobId);
     // TODO: Appel API pour ajouter/supprimer des favoris
   };
 

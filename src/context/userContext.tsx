@@ -113,21 +113,15 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   const login = (user: User, token: string) => {
     try {
-      console.log('🔄 UserContext.login appelé avec:', { user, token });
 
       localStorage.setItem('auth_token', token);
       localStorage.setItem('user', JSON.stringify(user));
-
-      console.log('💾 Données sauvegardées dans localStorage');
-      console.log('Token dans localStorage:', localStorage.getItem('auth_token'));
-      console.log('User dans localStorage:', localStorage.getItem('user'));
 
       dispatch({
         type: 'LOGIN_SUCCESS',
         payload: { user, token }
       });
 
-      console.log('✅ Dispatch LOGIN_SUCCESS envoyé');
     } catch (error) {
       console.error('❌ Erreur lors de la sauvegarde des données utilisateur:', error);
     }

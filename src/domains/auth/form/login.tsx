@@ -66,11 +66,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
                 const result = await loginUser(apiData);
 
-                console.log('Connexion réussie:', result);
 
                 if (result.access_token && result.user) {
-                    console.log("🚀 ~ handleSubmit ~ result.token && result.user:", result.token, result.user)
-
                     login(result.user, result.access_token);
                 }
 

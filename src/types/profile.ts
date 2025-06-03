@@ -1,4 +1,4 @@
-import { profileSchema, cvFileSchema } from "@/domains/profile/schema/schema";
+import { profileSchema, cvFileSchema } from "@/domains/profile/schema/profile";
 import z from "zod";
 
 export type ProfileFormData = z.infer<typeof profileSchema>;
@@ -17,10 +17,10 @@ export interface ProfileData extends ProfileFormData {
   joinDate: string;
 }
 
-export interface ProfilePageProps {
-  initialData?: ProfileData;
-  onProfileUpdate?: (data: ProfileFormData) => Promise<void>;
-  onCVUpload?: (file: File) => Promise<string>;
-  onCVDelete?: () => Promise<void>;
-  onAvatarUpload?: (file: File) => Promise<string>;
+export interface UploadedCV {
+  id: string;
+  name: string;
+  size: number;
+  uploadDate: string;
+  url?: string;
 }
