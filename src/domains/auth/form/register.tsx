@@ -51,11 +51,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         clearFieldError,
         isValid
     } = useZodValidation(registerSchema, formData);
-    console.log("🚀 ~ isValid:", isValid)
-    console.log("🚀 ~ isValidating:", isValidating)
-    console.log("🚀 ~ errors:", errors)
-    console.log("🚀 ~ formData:", formData)
-    console.log("🚀 ~ registerSchema:", registerSchema)
 
     const handleInputChange = useCallback((field: keyof RegisterFormData, value: string | boolean) => {
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -114,7 +109,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
 
                 const result = await registerUser(apiData);
 
-                console.log('Inscription réussie:', result);
 
                 if (result.token) {
                     localStorage.setItem('auth_token', result.token);
