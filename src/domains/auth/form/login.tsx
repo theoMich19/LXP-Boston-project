@@ -11,7 +11,6 @@ import toastUtils from '@/utils/toast';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/context/userContext';
 
-
 export const LoginForm: React.FC<LoginFormProps> = ({
     onSwitchToRegister,
     className = ""
@@ -66,7 +65,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
                 const result = await loginUser(apiData);
 
-
                 if (result.access_token && result.user) {
                     login(result.user, result.access_token);
                 }
@@ -74,25 +72,23 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                 if (rememberMe) {
                     localStorage.setItem('remember_me', 'true');
                 }
-                toastUtils.info("Connexion réussie")
+                toastUtils.info("Login successful")
                 route.push('/dashboard')
 
-
             } catch (error) {
-                console.error('Erreur lors de la connexion:', error);
+                console.error('Login error:', error);
 
-                let errorMessage = error.message || 'Une erreur est survenue';
+                let errorMessage = error.message || 'An error occurred';
 
                 if (error.message.includes('401') || error.message.includes('Unauthorized')) {
-                    errorMessage = 'Email ou mot de passe incorrect';
+                    errorMessage = 'Incorrect email or password';
                 } else if (error.message.includes('429')) {
-                    errorMessage = 'Trop de tentatives. Veuillez réessayer plus tard';
+                    errorMessage = 'Too many attempts. Please try again later';
                 } else if (error.message.includes('500')) {
-                    errorMessage = 'Erreur serveur. Veuillez réessayer plus tard';
+                    errorMessage = 'Server error. Please try again later';
                 }
 
                 toastUtils.error(errorMessage)
-                // setApiError(errorMessage);
             } finally {
                 setIsLoading(false);
             }
@@ -110,10 +106,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         <Card className={`w-full max-w-md p-8 glass-effect ${className}`}>
             <div className="text-center mb-8">
                 <h2 className="text-2xl font-bold text-foreground mb-2">
-                    Se connecter
+                    Sign In
                 </h2>
                 <p className="text-muted-foreground">
-                    Connectez-vous à votre compte TalentBridge
+                    Sign in to your TalentBridge account
                 </p>
             </div>
 
@@ -133,7 +129,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                         <Input
                             id="login-email"
                             type="email"
-                            placeholder="votre@email.com"
+                            placeholder="your@email.com"
                             value={formData.email}
                             onChange={(e) => handleInputChange('email', e.target.value)}
                             className={`pl-10 transition-colors ${errors.email
@@ -162,7 +158,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                         htmlFor="login-password"
                         className="text-sm font-medium text-foreground"
                     >
-                        Mot de passe <span className="text-destructive">*</span>
+                        Password <span className="text-destructive">*</span>
                     </label>
                     <div className="relative">
                         <Lock
@@ -189,7 +185,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                             onClick={togglePasswordVisibility}
                             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
                             disabled={isLoading}
-                            aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                            aria-label={showPassword ? "Hide password" : "Show password"}
                         >
                             {showPassword ?
                                 <EyeOff className="h-5 w-5" aria-hidden="true" /> :
@@ -218,16 +214,16 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                             disabled={isLoading}
                         />
                         <span className="text-muted-foreground select-none">
-                            Se souvenir de moi
+                            Remember me
                         </span>
                     </label>
                     <button
                         type="button"
                         className="text-sm text-primary hover:underline focus:outline-none focus:underline transition-all"
                         disabled={isLoading}
-                        onClick={() => console.log('Mot de passe oublié')}
+                        onClick={() => console.log('Forgot password')}
                     >
-                        Mot de passe oublié ?
+                        Forgot password?
                     </button>
                 </div> */}
 
@@ -241,11 +237,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                     {isLoading ? (
                         <div className="flex items-center space-x-2">
                             <Loader2 className="w-4 h-4 animate-spin" />
-                            <span>Connexion...</span>
+                            <span>Signing in...</span>
                         </div>
                     ) : (
                         <div className="flex items-center">
-                            <span>Se connecter</span>
+                            <span>Sign In</span>
                             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                         </div>
                     )}
@@ -254,17 +250,16 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
             <div className="mt-8 text-center">
                 <p className="text-muted-foreground">
-                    Pas encore de compte ?{' '}
+                    Don&apos;t have an account?{' '}
                     <button
                         onClick={onSwitchToRegister}
                         className="text-primary hover:underline font-medium focus:outline-none focus:underline transition-all"
                         disabled={isLoading}
                     >
-                        Créer un compte
+                        Create account
                     </button>
                 </p>
             </div>
-
         </Card>
     );
 };

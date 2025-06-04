@@ -10,18 +10,18 @@ import { getPasswordStrength } from "@/utils/auth";
 import { Input } from "@/components/ui/input";
 import { registerUser } from "@/domains/auth/server/register";
 
-// Définition des rôles disponibles
+// Available roles definition
 const ROLES = [
     {
         value: 'candidate',
-        label: 'Candidat',
-        description: 'Je recherche un emploi',
+        label: 'Candidate',
+        description: 'I\'m looking for a job',
         icon: UserCheck
     },
     {
         value: 'hr',
-        label: 'Recruteur',
-        description: 'Je recrute des talents',
+        label: 'Recruiter',
+        description: 'I recruit talents',
         icon: Building
     }
 ] as const;
@@ -35,12 +35,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         lastName: '',
         email: '',
         password: '',
-        role: 'candidate' // Valeur par défaut
+        role: 'candidate' // Default value
     });
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
-    // const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
     const [focusedField, setFocusedField] = useState<string | null>(null);
 
     const {
@@ -63,9 +62,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
             if ((field === 'firstName' || field === 'lastName') && value.length >= 2) {
                 setTimeout(() => validateField(field), 300);
             }
-            // if (field === 'confirmPassword' && formData.password) {
-            //     setTimeout(() => validateField(field), 300);
-            // }
         }
     }, [clearFieldError, validateField, formData.password]);
 
@@ -77,10 +73,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
     const togglePasswordVisibility = useCallback(() => {
         setShowPassword(prev => !prev);
     }, []);
-
-    // const toggleConfirmPasswordVisibility = useCallback(() => {
-    //     setShowConfirmPassword(prev => !prev);
-    // }, []);
 
     const handleFocus = useCallback((field: string) => {
         setFocusedField(field);
@@ -109,7 +101,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
 
                 const result = await registerUser(apiData);
 
-
                 if (result.token) {
                     localStorage.setItem('auth_token', result.token);
                 }
@@ -117,7 +108,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                 onSwitchToLogin()
 
             } catch (error) {
-                console.error('Erreur lors de l\'inscription:', error);
+                console.error('Registration error:', error);
             } finally {
                 setIsLoading(false);
             }
@@ -139,18 +130,18 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         <Card className={`w-full max-w-md p-8 glass-effect ${className}`}>
             <div className="text-center mb-8">
                 <h2 className="text-2xl font-bold text-foreground mb-2">
-                    Créer un compte
+                    Create Account
                 </h2>
                 <p className="text-muted-foreground">
-                    Rejoignez TalentBridge et trouvez votre emploi idéal
+                    Join TalentBridge and find your ideal job
                 </p>
             </div>
 
             <div className="space-y-6" onKeyDown={handleKeyDown}>
-                {/* Sélection du rôle */}
+                {/* Role selection */}
                 <div className="space-y-3">
                     <label className="text-sm font-medium text-foreground">
-                        Je suis <span className="text-destructive">*</span>
+                        I am <span className="text-destructive">*</span>
                     </label>
                     <div className="grid grid-cols-2 gap-3">
                         {ROLES.map((role) => {
@@ -193,7 +184,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                                         </div>
                                     </div>
 
-                                    {/* Indicateur de sélection */}
+                                    {/* Selection indicator */}
                                     {isSelected && (
                                         <div className="absolute top-2 right-2">
                                             <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
@@ -212,14 +203,14 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                     )}
                 </div>
 
-                {/* Champs nom et prénom */}
+                {/* First name and last name fields */}
                 <div className="flex flex-row sm:flex-col gap-4">
                     <div className="space-y-2">
                         <label
                             htmlFor="register-firstName"
                             className="text-sm font-medium text-foreground"
                         >
-                            Prénom <span className="text-destructive">*</span>
+                            First Name <span className="text-destructive">*</span>
                         </label>
                         <div className="relative">
                             <User
@@ -229,7 +220,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                             <Input
                                 id="register-firstName"
                                 type="text"
-                                placeholder="Prénom"
+                                placeholder="First Name"
                                 value={formData.firstName}
                                 onChange={(e) => handleInputChange('firstName', e.target.value)}
                                 onFocus={() => handleFocus('firstName')}
@@ -260,7 +251,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                             htmlFor="register-lastName"
                             className="text-sm font-medium text-foreground"
                         >
-                            Nom <span className="text-destructive">*</span>
+                            Last Name <span className="text-destructive">*</span>
                         </label>
                         <div className="relative">
                             <User
@@ -270,7 +261,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                             <Input
                                 id="register-lastName"
                                 type="text"
-                                placeholder="Nom"
+                                placeholder="Last Name"
                                 value={formData.lastName}
                                 onChange={(e) => handleInputChange('lastName', e.target.value)}
                                 onFocus={() => handleFocus('lastName')}
@@ -313,7 +304,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                         <Input
                             id="register-email"
                             type="email"
-                            placeholder="votre@email.com"
+                            placeholder="your@email.com"
                             value={formData.email}
                             onChange={(e) => handleInputChange('email', e.target.value)}
                             onFocus={() => handleFocus('email')}
@@ -339,13 +330,13 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                     )}
                 </div>
 
-                {/* Mot de passe */}
+                {/* Password */}
                 <div className="space-y-2">
                     <label
                         htmlFor="register-password"
                         className="text-sm font-medium text-foreground"
                     >
-                        Mot de passe <span className="text-destructive">*</span>
+                        Password <span className="text-destructive">*</span>
                     </label>
                     <div className="relative">
                         <Lock
@@ -374,7 +365,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                             onClick={togglePasswordVisibility}
                             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
                             disabled={isLoading}
-                            aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                            aria-label={showPassword ? "Hide password" : "Show password"}
                         >
                             {showPassword ?
                                 <EyeOff className="h-5 w-5" aria-hidden="true" /> :
@@ -402,7 +393,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                             {(focusedField === 'password' || passwordStrength.strength < 100) && (
                                 <div className="bg-muted/50 rounded-lg p-3 space-y-2">
                                     <p className="text-xs font-medium text-muted-foreground mb-2">
-                                        Exigences du mot de passe :
+                                        Password requirements:
                                     </p>
                                     {passwordStrength.requirements.map((req, index) => (
                                         <div key={index} className="flex items-center space-x-2">
@@ -433,78 +424,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                     )}
                 </div>
 
-                {/* Confirmation mot de passe */}
-                {/* <div className="space-y-2">
-                    <label
-                        htmlFor="register-confirm-password"
-                        className="text-sm font-medium text-foreground"
-                    >
-                        Confirmer le mot de passe <span className="text-destructive">*</span>
-                    </label>
-                    <div className="relative">
-                        <Lock
-                            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 pointer-events-none"
-                            aria-hidden="true"
-                        />
-                        <Input
-                            id="register-confirm-password"
-                            type={showConfirmPassword ? 'text' : 'password'}
-                            placeholder="••••••••"
-                            value={formData.confirmPassword}
-                            onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                            className={`pl-10 pr-12 transition-colors ${errors.confirmPassword
-                                ? 'border-destructive focus:border-destructive'
-                                : formData.confirmPassword && formData.password === formData.confirmPassword
-                                    ? 'border-success focus:border-success'
-                                    : 'focus:border-primary'
-                                }`}
-                            disabled={isLoading}
-                            autoComplete="new-password"
-                            aria-invalid={!!errors.confirmPassword}
-                            aria-describedby={errors.confirmPassword ? "register-confirm-password-error" : undefined}
-                        />
-                        <button
-                            type="button"
-                            onClick={toggleConfirmPasswordVisibility}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
-                            disabled={isLoading}
-                            aria-label={showConfirmPassword ? "Masquer la confirmation" : "Afficher la confirmation"}
-                        >
-                            {showConfirmPassword ?
-                                <EyeOff className="h-5 w-5" aria-hidden="true" /> :
-                                <Eye className="h-5 w-5" aria-hidden="true" />
-                            }
-                        </button>
-                    </div>
-
-                    {formData.confirmPassword && (
-                        <div className="flex items-center space-x-2">
-                            {formData.password === formData.confirmPassword ? (
-                                <>
-                                    <Check className="h-4 w-4 text-success" />
-                                    <span className="text-xs text-success">Les mots de passe correspondent</span>
-                                </>
-                            ) : (
-                                <>
-                                    <X className="h-4 w-4 text-destructive" />
-                                    <span className="text-xs text-destructive">Les mots de passe ne correspondent pas</span>
-                                </>
-                            )}
-                        </div>
-                    )}
-
-                    {errors.confirmPassword && (
-                        <p
-                            id="register-confirm-password-error"
-                            className="text-sm text-destructive animate-slide-up"
-                            role="alert"
-                        >
-                            {errors.confirmPassword}
-                        </p>
-                    )}
-                </div> */}
-
-                {/* Bouton de soumission */}
+                {/* Submit button */}
                 <Button
                     type="button"
                     onClick={handleSubmit}
@@ -515,13 +435,13 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                     {isLoading ? (
                         <div className="flex items-center space-x-2">
                             <Loader2 className="w-4 h-4 animate-spin" />
-                            <span>Création du compte...</span>
+                            <span>Creating account...</span>
                         </div>
                     ) : (
                         <div className="flex items-center">
                             <Shield className="mr-2 h-4 w-4" />
                             <span>
-                                {formData.role === 'candidate' ? 'Créer mon profil candidat' : 'Créer mon espace recruteur'}
+                                {formData.role === 'candidate' ? 'Create my candidate profile' : 'Create my recruiter workspace'}
                             </span>
                             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                         </div>
@@ -531,13 +451,13 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
 
             <div className="mt-8 text-center">
                 <p className="text-muted-foreground">
-                    Déjà un compte ?{' '}
+                    Already have an account?{' '}
                     <button
                         onClick={onSwitchToLogin}
                         className="text-primary hover:underline font-medium focus:outline-none focus:underline transition-all"
                         disabled={isLoading}
                     >
-                        Se connecter
+                        Sign in
                     </button>
                 </p>
             </div>
