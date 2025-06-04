@@ -18,9 +18,7 @@ export interface ProfileData extends ProfileFormData {
 }
 
 export interface UploadedCV {
-  id: string;
-  name: string;
-  size: number;
-  uploadDate: string;
-  url?: string;
+  last_upload_date: string;
+  file_name: string;
+  has_cv: boolean;
 }

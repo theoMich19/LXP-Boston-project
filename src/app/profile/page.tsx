@@ -5,11 +5,12 @@ import { Loader2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Alert } from '@/components/ui/alert';
 import { useUser } from '@/context/userContext';
-import { ProfileFormData } from '@/types/profile';
+import { ProfileFormData, UploadedCV } from '@/types/profile';
 import { PersonalInfoForm } from '@/domains/profile/form/form-personnel';
 import ProfileRecapCard from '@/components/profile/profile-recap-card';
 import { ProfileCompletudeCard } from '@/components/profile/profile-completude-card';
 import { CVUploadForm } from '@/domains/profile/form/form-cv';
+import { CVEmptyCard, CVExistingCard, CVLoadingSkeleton } from '@/components/profile/profile-cv-card';
 
 const ProfilePage: React.FC = () => {
     const { user, isAuthenticated } = useUser();
@@ -18,7 +19,7 @@ const ProfilePage: React.FC = () => {
         last_name: user?.last_name || '',
         email: user?.email || ''
     });
-    const [lastCVData, setLastCVData] = useState({})
+    const [lastCVData, setLastCVData] = useState<UploadedCV | null>(null)
 
     const [isEditing, setIsEditing] = useState(false);
     const [isLoadingCVData, setIsLoadingCVData] = useState(false);
@@ -107,7 +108,6 @@ const ProfilePage: React.FC = () => {
             }
 
             const data = await response.json();
-            console.log("🚀 ~ fetchLastCVData ~ data:", data)
             setLastCVData(data);
 
         } catch (err) {
@@ -172,9 +172,17 @@ const ProfilePage: React.FC = () => {
                         />
                         {
                             isLoadingCVData ? (
-                                <span>Loading</span>
+                                <CVLoadingSkeleton />
                             ) : (
-                                <span></span>
+                                <> {
+                                    lastCVData?.has_cv ? (
+                                        <CVExistingCard lastUploadDate={lastCVData.last_upload_date} />
+                                    ) : (
+                                        <CVEmptyCard />
+                                    )
+                                }
+
+                                </>
                             )
                         }
                         <CVUploadForm />

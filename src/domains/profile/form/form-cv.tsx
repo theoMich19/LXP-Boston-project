@@ -14,7 +14,7 @@ import { Alert } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { useCVValidation } from '@/hooks/useZodValidationProfile';
 
-export const CVUploadForm: React.FC = () => {
+export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void }) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -37,10 +37,8 @@ export const CVUploadForm: React.FC = () => {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
     };
 
-    // FONCTION CORRIGÉE pour l'API
     const uploadCVToAPI = async (file: File): Promise<void> => {
         const formData = new FormData();
-        // CORRECTION: Utiliser 'cv_file' selon votre documentation API
         formData.append('cv_file', file);
 
         try {
@@ -53,7 +51,6 @@ export const CVUploadForm: React.FC = () => {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    // Le Content-Type est automatiquement défini par le navigateur pour FormData
                 },
                 body: formData,
             });
@@ -81,8 +78,8 @@ export const CVUploadForm: React.FC = () => {
                 throw new Error(errorData.message || `Erreur ${response.status}: ${response.statusText}`);
             }
 
-            // Succès
             const data = await response.json();
+            fetchLastCVData()
         } catch (error) {
             console.error('Erreur upload CV:', error);
             throw error;
