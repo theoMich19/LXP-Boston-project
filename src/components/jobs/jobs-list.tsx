@@ -10,7 +10,6 @@ import { Card } from '@/components/ui/card';
 import { ListJobsProps } from '@/types/jobs';
 import { JobItem } from './jobs-item';
 
-
 // Composant principal de la liste
 export const JobsList: React.FC<ListJobsProps> = ({
     jobsData,
@@ -21,7 +20,7 @@ export const JobsList: React.FC<ListJobsProps> = ({
 }) => {
     if (loading) {
         return (
-            <div className="w-full max-w-[70%] space-y-4">
+            <div className="w-full space-y-4">
                 <div className="flex items-center justify-between mb-6">
                     <div className="h-8 w-48 bg-muted animate-pulse rounded"></div>
                     <div className="h-6 w-32 bg-muted animate-pulse rounded"></div>
@@ -53,7 +52,7 @@ export const JobsList: React.FC<ListJobsProps> = ({
 
     if (!jobsData || jobsData.data.length === 0) {
         return (
-            <div className="w-full max-w-[70%]">
+            <div className="w-full">
                 <Card className="p-12 text-center">
                     <div className="space-y-4">
                         <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto">
@@ -61,15 +60,15 @@ export const JobsList: React.FC<ListJobsProps> = ({
                         </div>
                         <div>
                             <h3 className="text-lg font-semibold text-foreground mb-2">
-                                No Jobs Found
+                                Aucun emploi trouvé
                             </h3>
                             <p className="text-muted-foreground">
-                                We couldn&apos;t find any jobs matching your criteria. Try adjusting your search filters.
+                                Nous n'avons trouvé aucun emploi correspondant à vos critères. Essayez d'ajuster vos filtres de recherche.
                             </p>
                         </div>
                         <Button variant="outline" className="mt-4">
                             <ExternalLink className="h-4 w-4 mr-2" />
-                            Browse All Jobs
+                            Parcourir tous les emplois
                         </Button>
                     </div>
                 </Card>
@@ -78,23 +77,15 @@ export const JobsList: React.FC<ListJobsProps> = ({
     }
 
     return (
-        <div className="w-full max-w-[70%] space-y-6">
+        <div className="w-full space-y-6">
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-2xl font-bold text-foreground">
-                        Job Matches
+                        Offres correspondantes
                     </h2>
                     <p className="text-muted-foreground mt-1">
                         {jobsData.message}
                     </p>
-                </div>
-                <div className="text-right">
-                    <div className="text-2xl font-bold text-primary">
-                        {jobsData.total_matches}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                        Total Matches
-                    </div>
                 </div>
             </div>
 
@@ -114,11 +105,10 @@ export const JobsList: React.FC<ListJobsProps> = ({
             {jobsData.total_matches > jobsData.data.length && (
                 <div className="text-center pt-6">
                     <Button variant="outline" size="lg">
-                        Load More Jobs
+                        Charger plus d'emplois
                     </Button>
                 </div>
             )}
         </div>
     );
 };
-

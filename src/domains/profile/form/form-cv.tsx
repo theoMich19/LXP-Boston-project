@@ -83,7 +83,6 @@ export const CVUploadForm: React.FC = () => {
 
             // Succès
             const data = await response.json();
-            console.log('CV uploadé avec succès:', data);
         } catch (error) {
             console.error('Erreur upload CV:', error);
             throw error;
