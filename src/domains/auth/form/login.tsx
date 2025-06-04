@@ -208,7 +208,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                     )}
                 </div>
 
-                <div className="flex items-center justify-between">
+                {/* <div className="flex items-center justify-between">
                     <label className="flex items-center space-x-2 text-sm cursor-pointer">
                         <input
                             type="checkbox"
@@ -229,7 +229,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                     >
                         Mot de passe oublié ?
                     </button>
-                </div>
+                </div> */}
 
                 <Button
                     type="button"
