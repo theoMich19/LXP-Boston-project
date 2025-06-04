@@ -12,7 +12,7 @@ import { JobDetailsModal } from '@/components/jobs/job-modals';
 export default function Home() {
   const { user } = useUser()
   const [jobsData, setJobsData] = useState<JobsApiResponse | null>(null);
-  const [dataJobsApply, setDataJobsApply] = useState<JobMatchApply[] | null>(null);
+  const [dataJobsApply, setDataJobsApply] = useState<JobMatchApply[] | []>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingIA, setIsLoadingIA] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -293,7 +293,7 @@ export default function Home() {
             )}
           </div>
 
-          {user ? (<div className="w-80 space-y-6">
+          {user?.role === "candidate" ? (<div className="w-80 space-y-6">
             {/* Card principale - Recherche IA */}
             <Card className="p-6 bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
               <div className="text-center space-y-4">

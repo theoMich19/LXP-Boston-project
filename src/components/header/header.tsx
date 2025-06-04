@@ -10,6 +10,11 @@ const Header = () => {
     const pathname = usePathname()
     const route = useRouter()
 
+    const handleLogout = () => {
+        logout()
+        route.push("/dashboard")
+    }
+
     if (!isAuthenticated && pathname === "/dashboard") {
         route.push("/dashboard")
     }
@@ -44,7 +49,7 @@ const Header = () => {
                                         <User className="h-5 w-5" />
                                         <span>Profile</span>
                                     </Button>
-                                    <Button className="hover:shadow-sm hidden md:flex" onClick={() => logout()}>Logout</Button>
+                                    <Button className="hover:shadow-sm hidden md:flex" onClick={() => handleLogout()}>Logout</Button>
                                 </div>
                             ) :
                             (

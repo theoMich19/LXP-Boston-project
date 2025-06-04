@@ -154,7 +154,7 @@ export const JobItem: React.FC<JobItemProps> = ({
                             <Eye className="h-4 w-4" />
                             <span>View Details</span>
                         </Button>
-                        {user ? (
+                        {user?.role === "candidate" ? (
                             <>
                                 {
                                     isJobsApply ? <Button disabled>already applied </Button> : (

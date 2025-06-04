@@ -10,7 +10,6 @@ import { Card } from '@/components/ui/card';
 import { JobMatchApply, ListJobsProps } from '@/types/jobs';
 import { JobItem } from './jobs-item';
 
-// Composant principal de la liste
 export const JobsList: React.FC<ListJobsProps> = ({
     dataJobsApply,
     jobsData,

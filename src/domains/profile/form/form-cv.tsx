@@ -46,7 +46,6 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
             if (!token) {
                 throw new Error('Token d\'authentification manquant');
             }
-
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/cvs/`, {
                 method: 'POST',
                 headers: {
@@ -58,7 +57,6 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
 
-                // Gestion spécifique des erreurs 422 (validation)
                 if (response.status === 422) {
                     let errorMessage = 'Erreur de validation des données';
 

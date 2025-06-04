@@ -11,6 +11,7 @@ import ProfileRecapCard from '@/components/profile/profile-recap-card';
 import { ProfileCompletudeCard } from '@/components/profile/profile-completude-card';
 import { CVUploadForm } from '@/domains/profile/form/form-cv';
 import { CVEmptyCard, CVExistingCard, CVLoadingSkeleton } from '@/components/profile/profile-cv-card';
+import { ApplyJob } from '@/components/profile/profile-applyJob-list';
 
 const ProfilePage: React.FC = () => {
     const { user, isAuthenticated } = useUser();
@@ -171,21 +172,28 @@ const ProfilePage: React.FC = () => {
                             onSave={handleSaveProfile}
                         />
                         {
-                            isLoadingCVData ? (
-                                <CVLoadingSkeleton />
-                            ) : (
-                                <> {
-                                    lastCVData?.has_cv ? (
-                                        <CVExistingCard lastUploadDate={lastCVData.last_upload_date} />
-                                    ) : (
-                                        <CVEmptyCard />
-                                    )
-                                }
-
+                            user.role === "candidate" ? (
+                                <>
+                                    {
+                                        isLoadingCVData ? (
+                                            <CVLoadingSkeleton />
+                                        ) : (
+                                            <> {
+                                                lastCVData?.has_cv ? (
+                                                    <CVExistingCard lastUploadDate={lastCVData.last_upload_date} />
+                                                ) : (
+                                                    <CVEmptyCard />
+                                                )
+                                            }
+                                            </>
+                                        )
+                                    }
+                                    <CVUploadForm fetchLastCVData={fetchLastCVData} />
                                 </>
+                            ) : (
+                                <ApplyJob />
                             )
                         }
-                        <CVUploadForm />
                     </div>
                 </div>
             </div>
