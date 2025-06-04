@@ -5,8 +5,10 @@ import { Badge } from "../ui/badge";
 import { Avatar } from "../ui/avatar";
 import { JobItemProps } from "@/types/jobs";
 import { CompatibilityScore } from "./jobs-item-score";
+import { useUser } from "@/context/userContext";
 
 export const JobItem: React.FC<JobItemProps> = ({
+    isJobsApply,
     job,
     onViewDetails,
     onApply,
@@ -23,20 +25,12 @@ export const JobItem: React.FC<JobItemProps> = ({
         salary_max,
         description
     } = job;
+    const { user } = useUser()
 
     const formatSalary = (min: string, max: string) => {
         const minK = Math.round(parseFloat(min) / 1000);
         const maxK = Math.round(parseFloat(max) / 1000);
         return `${minK}k - ${maxK}k €`;
-    };
-
-    const getCompanyInitials = (companyName: string) => {
-        return companyName
-            .split(' ')
-            .map(word => word[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2);
     };
 
     return (
@@ -160,17 +154,27 @@ export const JobItem: React.FC<JobItemProps> = ({
                             <Eye className="h-4 w-4" />
                             <span>View Details</span>
                         </Button>
-                        <Button
-                            size="sm"
-                            onClick={() => onApply?.(id)}
-                            className="flex items-center space-x-1"
-                        >
-                            <Send className="h-4 w-4" />
-                            <span>Apply Now</span>
-                        </Button>
+                        {user ? (
+                            <>
+                                {
+                                    isJobsApply ? <Button disabled>already applied </Button> : (
+                                        <Button
+                                            size="sm"
+                                            onClick={() => onApply?.(id)}
+                                            className="flex items-center space-x-1"
+                                        >
+                                            <Send className="h-4 w-4" />
+                                            <span>Apply Now</span>
+                                        </Button>
+
+                                    )
+                                }
+                            </>
+                        ) : (null)}
+
                     </div>
                 </div>
             </div>
-        </Card>
+        </Card >
     );
 };

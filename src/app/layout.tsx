@@ -34,7 +34,7 @@ export default function RootLayout({
         <UserProvider>
           <Header />
           {children}
-          <ToastContainer aria-label={undefined} position="bottom-right" />
+          <ToastContainer aria-label={undefined} position={"bottom-right"} />
         </UserProvider>
       </body>
     </html>

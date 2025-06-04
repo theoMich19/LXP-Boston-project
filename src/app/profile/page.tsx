@@ -18,8 +18,10 @@ const ProfilePage: React.FC = () => {
         last_name: user?.last_name || '',
         email: user?.email || ''
     });
+    const [lastCVData, setLastCVData] = useState({})
 
     const [isEditing, setIsEditing] = useState(false);
+    const [isLoadingCVData, setIsLoadingCVData] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [alert, setAlert] = useState<{
         type: 'success' | 'error' | 'info' | 'warning';
@@ -35,6 +37,7 @@ const ProfilePage: React.FC = () => {
                 last_name: user.last_name,
                 email: user.email
             });
+            fetchLastCVData()
         }
     }, [user]);
 
@@ -76,12 +79,46 @@ const ProfilePage: React.FC = () => {
         setAlert(null);
     }, [user]);
 
-    useEffect(() => {
-        if (alert) {
-            const timeout = setTimeout(() => setAlert(null), 5000);
-            return () => clearTimeout(timeout);
+    const fetchLastCVData = async () => {
+        setIsLoadingCVData(true);
+
+        try {
+            const token = localStorage.getItem('auth_token');
+            if (!token) {
+                throw new Error('Token d\'authentification manquant. Veuillez vous connecter.');
+            }
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/cvs/last-upload`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Session expirée. Veuillez vous reconnecter.');
+                }
+                if (response.status === 403) {
+                    throw new Error('Accès non autorisé à cette fonctionnalité.');
+                }
+                throw new Error(`Erreur HTTP: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log("🚀 ~ fetchLastCVData ~ data:", data)
+            setLastCVData(data);
+
+        } catch (err) {
+            console.error('Erreur lors du fetch du CV:', err);
+            // setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+
+        } finally {
+            setIsLoadingCVData(false);
         }
-    }, [alert]);
+    };
+
 
     if (!isAuthenticated || !user) {
         return (
@@ -133,6 +170,13 @@ const ProfilePage: React.FC = () => {
                             onCancel={handleCancelEdit}
                             onSave={handleSaveProfile}
                         />
+                        {
+                            isLoadingCVData ? (
+                                <span>Loading</span>
+                            ) : (
+                                <span></span>
+                            )
+                        }
                         <CVUploadForm />
                     </div>
                 </div>

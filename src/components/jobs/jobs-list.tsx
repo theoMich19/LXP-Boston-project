@@ -7,17 +7,25 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ListJobsProps } from '@/types/jobs';
+import { JobMatchApply, ListJobsProps } from '@/types/jobs';
 import { JobItem } from './jobs-item';
 
 // Composant principal de la liste
 export const JobsList: React.FC<ListJobsProps> = ({
+    dataJobsApply,
     jobsData,
     loading = false,
     onViewDetails,
     onApply,
     onToggleFavorite
 }) => {
+    const getJobsApply = (jobOfferId: number) => {
+        return dataJobsApply.find((jobs: JobMatchApply) =>
+            jobs.job_offer_id === jobOfferId
+        );
+    };
+
+
     if (loading) {
         return (
             <div className="w-full space-y-4">
@@ -92,6 +100,7 @@ export const JobsList: React.FC<ListJobsProps> = ({
             <div className="space-y-4">
                 {jobsData.data.map((job) => (
                     <JobItem
+                        isJobsApply={getJobsApply(job.id)}
                         key={job.id}
                         job={job}
                         userSkills={jobsData.user_skills}

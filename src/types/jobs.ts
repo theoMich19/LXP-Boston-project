@@ -9,6 +9,22 @@ export interface JobMatch {
   salary_min: string;
   salary_max: string;
   description: string;
+  status?: string;
+  created_at?: string;
+}
+export interface JobMatchApply {
+  applied_at: string;
+  candidate_email: string;
+  candidate_first_name: string;
+  candidate_last_name: string;
+  company_name: string;
+  id: number;
+  job_offer_id: number;
+  job_salary_max: number;
+  job_salary_min: number;
+  job_title: string;
+  status: string;
+  user_id: number;
 }
 
 export interface JobsData {
@@ -19,6 +35,7 @@ export interface JobsData {
 }
 
 export interface JobItemProps {
+  isJobsApply: boolean;
   job: JobMatch;
   userSkills: string[];
   onViewDetails?: (jobId: number) => void;
@@ -27,6 +44,7 @@ export interface JobItemProps {
 }
 
 export interface ListJobsProps {
+  dataJobsApply: JobMatchApply[];
   jobsData?: JobsData;
   loading?: boolean;
   onViewDetails?: (jobId: number) => void;
