@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { JobsList } from '@/components/jobs/jobs-list';
 import { FormSearch } from '@/domains/jobs/form/form-search';
 import { JobMatch, JobsApiResponse, JobMatchApply } from '@/types/jobs';
@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Sparkles, Target } from 'lucide-react';
 import { useUser } from '@/context/userContext';
 import { JobDetailsModal } from '@/components/jobs/job-modals';
+import { CompaniesResponse, Company } from '@/types/company';
+import { UploadedCV } from '@/types/profile';
 
 export default function Home() {
   const { user } = useUser()
@@ -18,6 +20,8 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [selectedJob, setSelectedJob] = useState<JobMatch | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [lastCVData, setLastCVData] = useState<UploadedCV | null>(null)
 
   const fetchJobs = async () => {
     setIsLoading(true);
@@ -88,6 +92,7 @@ export default function Home() {
     }
   };
   useEffect(() => {
+    fetchCompanies()
     fetchJobs();
   }, []);
 
@@ -96,6 +101,44 @@ export default function Home() {
     getJobsApply()
   }, [jobsData]);
 
+  useEffect(() => {
+    fetchLastCVData()
+  }, [user])
+
+
+  const fetchLastCVData = async () => {
+
+    try {
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        throw new Error('Token d\'authentification manquant. Veuillez vous connecter.');
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/cvs/last-upload`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Session expirée. Veuillez vous reconnecter.');
+        }
+        if (response.status === 403) {
+          throw new Error('Accès non autorisé à cette fonctionnalité.');
+        }
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setLastCVData(data);
+
+    } catch (err) {
+      console.error('Erreur lors du fetch du CV:', err);
+    }
+  };
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedJob(null);
@@ -105,6 +148,7 @@ export default function Home() {
   const handleViewDetails = (jobId: number) => {
     const job = jobsData?.data.find(j => j.id === jobId);
     if (job) {
+
       const jobData = {
         id: job.id,
         title: job.title,
@@ -215,9 +259,21 @@ export default function Home() {
       }
     }
   };
-  const handleToggleFavorite = (jobId: number) => {
-    // TODO: Appel API pour ajouter/supprimer des favoris
-  };
+
+  const fetchCompanies = useCallback(async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/companies/`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch companies');
+      }
+      const data: CompaniesResponse = await response.json();
+      setCompanies(data.data);
+    } catch (error) {
+      console.error('Error fetching companies:', error);
+    } finally {
+    }
+  }, []);
+
 
   if (isLoading) {
     return (
@@ -234,7 +290,7 @@ export default function Home() {
   if (error && !jobsData) {
     return (
       <div className="py-4 space-y-4 container mx-auto">
-        <FormSearch />
+        {/* <FormSearch /> */}
         <div className="text-center py-12">
           <div className="text-destructive mb-4">
             <p className="font-semibold">Erreur de chargement</p>
@@ -251,6 +307,8 @@ export default function Home() {
     );
   }
 
+
+
   return (
     <>
       <div className="py-4 space-y-4 container mx-auto">
@@ -262,13 +320,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* <div className="w-full">
-        <FormSearch />
-      </div> */}
-
-        {/* Layout principal avec sidebar */}
         <div className="flex gap-6">
-          {/* Colonne principale - Liste des jobs */}
           <div className="flex-1">
             {jobsData && (
               <JobsList
@@ -276,7 +328,7 @@ export default function Home() {
                 jobsData={jobsData}
                 onViewDetails={handleViewDetails}
                 onApply={handleApply}
-                onToggleFavorite={handleToggleFavorite}
+                companies={companies}
               />
             )}
 
@@ -312,7 +364,7 @@ export default function Home() {
 
                 <Button
                   onClick={fetchJobsIA}
-                  disabled={isLoadingIA}
+                  disabled={isLoadingIA || !lastCVData?.has_cv}
                   className="w-full"
                   size="lg"
                 >
@@ -328,6 +380,13 @@ export default function Home() {
                     </>
                   )}
                 </Button>
+                {
+                  !lastCVData?.has_cv ?
+                    <p className="text-muted-foreground text-sm">
+                      Aucun cv enregistré, veuillez en ajouter un depuis votre profile
+                    </p> : null
+                }
+
 
                 {/* Statistiques ou features */}
                 <div className="pt-4 border-t border-primary/10">
@@ -351,6 +410,7 @@ export default function Home() {
 
       <JobDetailsModal
         job={selectedJob}
+        companies={companies}
         isOpen={isModalOpen}
         onClose={handleCloseModal}
       />

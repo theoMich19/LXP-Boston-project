@@ -15,31 +15,31 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar } from '@/components/ui/avatar';
 import { JobMatch } from '@/types/jobs';
+import { Company } from '@/types/company';
 
 interface JobDetailsModalProps {
     job: JobMatch | null;
+    companies: Company[];
     isOpen: boolean;
     onClose: () => void;
 }
 
-const companies = {
-    1: { name: "TechCorp Solutions", logo: "TC" },
-    2: { name: "InnovateLab", logo: "IL" },
-    3: { name: "ConseilTech", logo: "CT" },
-    4: { name: "DataFlow", logo: "DF" },
-    5: { name: "GlobalSoft", logo: "GS" }
-};
-
 export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
     job,
     isOpen,
-    onClose
+    onClose,
+    companies
 }) => {
     if (!isOpen || !job) return null;
+    const getCompanyData = (company_id: number) => {
+        const data = companies.find(company => company.id === company_id)
+        return data
+    }
+    const company = getCompanyData(job.company_id)
 
-    const formatSalary = (min: string, max: string) => {
-        const minK = Math.round(parseFloat(min) / 1000);
-        const maxK = Math.round(parseFloat(max) / 1000);
+    const formatSalary = (min: number, max: number) => {
+        const minK = Math.round(min / 1000);
+        const maxK = Math.round(max / 1000);
         return `${minK}k - ${maxK}k €`;
     };
 
@@ -61,10 +61,6 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
         return `Il y a ${diffInDays} jours`;
     };
 
-    const company = companies[job.company_id as keyof typeof companies] || {
-        name: `Entreprise ${job.company_id}`,
-        logo: "EN"
-    };
 
     const formatDescription = (description: string) => {
         return description.split('\r\n').map((line, index) => (
@@ -95,7 +91,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                             </h1>
                             <div className="flex items-center space-x-1 text-muted-foreground mb-3">
                                 <Building className="h-5 w-5" />
-                                <span className="text-lg font-medium">{company.name}</span>
+                                <span className="text-lg font-medium">{company?.name}</span>
                             </div>
                             <div className="flex items-center space-x-6 text-sm text-muted-foreground">
                                 <span className="flex items-center space-x-1">

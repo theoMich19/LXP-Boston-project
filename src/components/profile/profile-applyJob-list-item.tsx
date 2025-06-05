@@ -12,12 +12,12 @@ import { JobMatch } from '@/types/jobs';
 
 export const JobOfferItem = ({
     jobOffer,
-    onEdit,
     onView,
+    onShowCandidate,
 }: {
     jobOffer: JobMatch;
-    onEdit?: (id: number) => void;
     onView?: (id: number) => void;
+    onShowCandidate?: (id: number) => void;
 }) => {
     const formatSalary = (min: number, max: number) => {
         const minK = Math.round(min / 1000);
@@ -54,7 +54,7 @@ export const JobOfferItem = ({
                             <h3 className="text-lg font-semibold text-foreground line-clamp-1">
                                 {jobOffer.title}
                             </h3>
-                            {getStatusBadge(jobOffer.status)}
+                            {getStatusBadge(jobOffer.status ? jobOffer.status : "")}
                         </div>
                         <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                             <span className="flex items-center space-x-1">
@@ -63,7 +63,7 @@ export const JobOfferItem = ({
                             </span>
                             <span className="flex items-center space-x-1">
                                 <Calendar className="h-4 w-4" />
-                                <span>Publié le {formatDate(jobOffer.created_at)}</span>
+                                <span>Publié le {formatDate(jobOffer.created_at ? jobOffer.created_at : "")}</span>
                             </span>
                         </div>
                     </div>
@@ -91,6 +91,14 @@ export const JobOfferItem = ({
                         >
                             <Eye className="h-4 w-4 mr-1" />
                             Voir
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => onShowCandidate?.(jobOffer.id)}
+                        >
+                            <Eye className="h-4 w-4 mr-1" />
+                            Voir la liste de candidats
                         </Button>
                         {/* <Button
                             variant="ghost"

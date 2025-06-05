@@ -9,23 +9,7 @@ import { registerSchema } from "../schema/register";
 import { getPasswordStrength } from "@/utils/auth";
 import { Input } from "@/components/ui/input";
 import { registerUser } from "@/domains/auth/server/register";
-
-interface Company {
-    id: number;
-    name: string;
-    city: string;
-    country: string;
-    email: string;
-    phone: string;
-    created_at: string;
-    updated_at: string;
-}
-
-interface CompaniesResponse {
-    total: number;
-    data: Company[];
-    message: string;
-}
+import { CompaniesResponse, Company } from "@/types/company";
 
 const ROLES = [
     {
@@ -155,7 +139,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
             }
         }
     }, [formData, validateAll, isValid]);
-    console.log("🚀 ~ formData:", formData)
 
     const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
         if (event.key === 'Enter' && !isLoading) {

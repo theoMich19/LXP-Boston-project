@@ -16,6 +16,7 @@ import { CompanyInfoCard } from '@/components/profile/profile-company-info';
 import { JobDetailsModal } from '@/components/jobs/job-modals';
 import { JobMatch } from '@/types/jobs';
 import { CompanyData } from '@/types/company';
+import { useRouter } from 'next/navigation';
 
 const ProfilePage = () => {
     const { user, isAuthenticated } = useUser();
@@ -26,6 +27,7 @@ const ProfilePage = () => {
     });
     const [lastCVData, setLastCVData] = useState<UploadedCV | null>(null)
     const [dataCompanyUser, setDataCompanyUser] = useState<CompanyData | null>(null)
+    const [dataCandidateApply, setDataCandidateApply] = useState<null>(null)
     const [isEditing, setIsEditing] = useState(false);
     const [isLoadingCVData, setIsLoadingCVData] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -35,8 +37,12 @@ const ProfilePage = () => {
     } | null>(null);
     const [selectedJob, setSelectedJob] = useState<JobMatch | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-
     const [errors] = useState<Record<string, string>>({});
+    const route = useRouter()
+
+    if (!isAuthenticated) {
+        route.push("/dashboard")
+    }
 
     useEffect(() => {
         if (user) {
@@ -127,6 +133,7 @@ const ProfilePage = () => {
             setIsLoadingCVData(false);
         }
     };
+
     const fetchCompany = async () => {
         setIsLoadingCVData(true);
 
@@ -135,7 +142,6 @@ const ProfilePage = () => {
             if (!token) {
                 throw new Error('Token d\'authentification manquant. Veuillez vous connecter.');
             }
-            console.log(user)
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/companies/${user?.company_id}`, {
                 method: 'GET',
@@ -163,6 +169,39 @@ const ProfilePage = () => {
             setIsLoadingCVData(false);
         }
     };
+
+    const fetchCandidateApply = async (job_offer_id: number) => {
+        try {
+            const token = localStorage.getItem('auth_token');
+            if (!token) {
+                throw new Error('Token d\'authentification manquant. Veuillez vous connecter.');
+            }
+
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/applications/job/${job_offer_id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Session expirée. Veuillez vous reconnecter.');
+                }
+                if (response.status === 403) {
+                    throw new Error('Accès non autorisé à cette fonctionnalité.');
+                }
+            }
+
+            const data = await response.json();
+            setDataCandidateApply(data)
+        } catch (err) {
+            console.error('Erreur lors du fetch du CV:', err);
+
+        }
+    };
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setSelectedJob(null);
@@ -187,6 +226,10 @@ const ProfilePage = () => {
             setIsModalOpen(true);
         }
     };
+
+    const handleViewCandidateApplyJob = (job_offer_id: number) => {
+        fetchCandidateApply(job_offer_id)
+    }
 
 
     if (!isAuthenticated || !user) {
@@ -244,7 +287,10 @@ const ProfilePage = () => {
                                 user.role === "hr" && dataCompanyUser ? (
                                     <>
                                         <CompanyInfoCard companyData={dataCompanyUser} />
-                                        <ApplyJob companyData={dataCompanyUser} handleViewJob={handleViewJob} />
+                                        <ApplyJob
+                                            companyData={dataCompanyUser}
+                                            handleViewJob={handleViewJob}
+                                            handleViewCandidateApplyJob={handleViewCandidateApplyJob} />
                                     </>
                                 ) : null}
 
@@ -278,6 +324,11 @@ const ProfilePage = () => {
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
             />
+            {/* <CandidateDetailsModal
+                job={selectedJob}
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+            /> */}
         </>
     );
 };

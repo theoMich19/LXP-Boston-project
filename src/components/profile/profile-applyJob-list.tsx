@@ -9,11 +9,15 @@ import { CompanyData } from '@/types/company';
 import { JobOfferItem } from './profile-applyJob-list-item';
 
 
-export const ApplyJob = ({ companyData, handleViewJob }: { companyData: CompanyData | null, handleViewJob: (jobId: number) => void }) => {
-    const handleEditJob = (jobId: number) => {
-        console.log('Edit job:', jobId);
-        // Logique pour éditer l'offre
-    };
+export const ApplyJob = ({
+    companyData,
+    handleViewJob,
+    handleViewCandidateApplyJob
+}: {
+    companyData: CompanyData | null,
+    handleViewJob: (jobId: number) => void,
+    handleViewCandidateApplyJob: (jobId: number) => void
+}) => {
 
     const handleCreateJob = () => {
         console.log('Create new job');
@@ -61,12 +65,12 @@ export const ApplyJob = ({ companyData, handleViewJob }: { companyData: CompanyD
                 </Card>
             ) : (
                 <div className="space-y-4">
-                    {jobOffers.map((jobOffer) => (
+                    {jobOffers.length !== 0 && jobOffers.map((jobOffer) => (
                         <JobOfferItem
                             key={jobOffer.id}
                             jobOffer={jobOffer}
-                            onEdit={handleEditJob}
                             onView={handleViewJob}
+                            onShowCandidate={handleViewCandidateApplyJob}
                         />
                     ))}
                 </div>

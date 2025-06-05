@@ -1,3 +1,5 @@
+import { Company } from "./company";
+
 export interface JobMatch {
   id: number;
   title: string;
@@ -6,8 +8,8 @@ export interface JobMatch {
   compatibility_score?: number;
   matched_skills?: string[];
   missing_skills?: string[];
-  salary_min: string;
-  salary_max: string;
+  salary_min: number;
+  salary_max: number;
   description: string;
   status?: string;
   created_at?: string;
@@ -40,7 +42,7 @@ export interface JobItemProps {
   userSkills: string[];
   onViewDetails?: (jobId: number) => void;
   onApply?: (jobId: number) => void;
-  onToggleFavorite?: (jobId: number) => void;
+  company: Company;
 }
 
 export interface ListJobsProps {
@@ -49,7 +51,7 @@ export interface ListJobsProps {
   loading?: boolean;
   onViewDetails?: (jobId: number) => void;
   onApply?: (jobId: number) => void;
-  onToggleFavorite?: (jobId: number) => void;
+  companies: Company[];
 }
 
 export interface JobsApiResponse {

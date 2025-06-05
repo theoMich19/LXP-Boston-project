@@ -15,10 +15,6 @@ const Header = () => {
         route.push("/dashboard")
     }
 
-    if (!isAuthenticated && pathname === "/dashboard") {
-        route.push("/dashboard")
-    }
-
 
     if (pathname === "/auth") {
         return (

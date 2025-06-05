@@ -1,10 +1,13 @@
 "use client"
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 
 export default function Default() {
+  const pathname = usePathname()
   const route = useRouter()
-  route.push('/dashboard')
+  if (pathname === "/") {
+    route.push('/dashboard')
+  }
 
   return (<></>)
 }

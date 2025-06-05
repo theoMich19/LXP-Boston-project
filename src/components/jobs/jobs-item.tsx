@@ -1,4 +1,4 @@
-import { Building, DollarSign, MapPin, Clock, Heart, Star, AlertCircle, Eye, Send } from "lucide-react";
+import { Building, DollarSign, MapPin, Clock, Star, AlertCircle, Eye, Send } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { Badge } from "../ui/badge";
@@ -12,12 +12,11 @@ export const JobItem: React.FC<JobItemProps> = ({
     job,
     onViewDetails,
     onApply,
-    onToggleFavorite
+    company
 }) => {
     const {
         id,
         title,
-        company_name,
         compatibility_score,
         matched_skills,
         missing_skills,
@@ -27,9 +26,9 @@ export const JobItem: React.FC<JobItemProps> = ({
     } = job;
     const { user } = useUser()
 
-    const formatSalary = (min: string, max: string) => {
-        const minK = Math.round(parseFloat(min) / 1000);
-        const maxK = Math.round(parseFloat(max) / 1000);
+    const formatSalary = (min: number, max: number) => {
+        const minK = Math.round(min / 1000);
+        const maxK = Math.round(max / 1000);
         return `${minK}k - ${maxK}k €`;
     };
 
@@ -47,7 +46,7 @@ export const JobItem: React.FC<JobItemProps> = ({
                             </h3>
                             <div className="flex items-center space-x-1 text-muted-foreground mt-1">
                                 <Building className="h-4 w-4" />
-                                <span className="text-sm font-medium">{company_name}</span>
+                                <span className="text-sm font-medium">{company?.name}</span>
                             </div>
                             <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
                                 <span className="flex items-center space-x-1">
