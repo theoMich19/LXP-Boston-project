@@ -16,7 +16,7 @@ import { CompanyInfoCard } from '@/components/profile/profile-company-info';
 import { JobDetailsModal } from '@/components/jobs/job-modals';
 import { JobMatch } from '@/types/jobs';
 import { CompaniesResponse, Company, CompanyData } from '@/types/company';
-import { useRouter } from 'next/navigation';
+import { ApplicationsModal } from '@/components/profile/profile-apply-job-modal';
 
 const ProfilePage = () => {
     const { user, isAuthenticated } = useUser();
@@ -38,12 +38,10 @@ const ProfilePage = () => {
     const [selectedJob, setSelectedJob] = useState<JobMatch | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [errors] = useState<Record<string, string>>({});
-    const [companies, setCompanies] = useState<Company[]>([])
-    const route = useRouter()
+    const [companies, setCompanies] = useState<Company[]>([]);
+    const [isModalApplyOpen, setIsModalApplyOpen] = useState<boolean>(false);
 
-    if (!isAuthenticated) {
-        route.push("/dashboard")
-    }
+
 
     useEffect(() => {
         if (user) {
@@ -193,7 +191,7 @@ const ProfilePage = () => {
                 throw new Error('Token d\'authentification manquant. Veuillez vous connecter.');
             }
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/applications/job/${job_offer_id}?status=null`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/applications/job/${job_offer_id}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -244,8 +242,61 @@ const ProfilePage = () => {
 
     const handleViewCandidateApplyJob = (job_offer_id: number) => {
         fetchCandidateApply(job_offer_id)
+        setIsModalApplyOpen(true)
     }
 
+    const handleStatusUpdate = async (applicationId: number, newStatus: 'accepted' | 'rejected' | 'pending') => {
+        try {
+            const token = localStorage.getItem('auth_token');
+            if (!token) {
+                throw new Error('Token d\'authentification manquant. Veuillez vous connecter.');
+            }
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/applications/${applicationId}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    status: newStatus
+                })
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Session expirée. Veuillez vous reconnecter.');
+                }
+                if (response.status === 403) {
+                    throw new Error('Accès non autorisé à cette fonctionnalité.');
+                }
+                if (response.status === 404) {
+                    throw new Error('Candidature non trouvée.');
+                }
+                throw new Error(`Erreur HTTP: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // Mettre à jour l'état local des candidatures
+            setDataCandidateApply(prev =>
+                prev.map(app =>
+                    app.id === applicationId
+                        ? { ...app, status: newStatus }
+                        : app
+                )
+            );
+
+            // Optionnel : afficher un message de succès
+            console.log('Statut mis à jour avec succès:', data);
+
+            return data;
+
+        } catch (err) {
+            console.error('Erreur lors de la mise à jour du statut:', err);
+            throw err; // Re-throw pour que le composant puisse gérer l'erreur
+        }
+    };
 
     if (!isAuthenticated || !user) {
         return (
@@ -340,11 +391,13 @@ const ProfilePage = () => {
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
             />
-            {/* <CandidateDetailsModal
-                job={selectedJob}
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
-            /> */}
+            <ApplicationsModal
+                isOpen={isModalApplyOpen}
+                onClose={() => setIsModalApplyOpen(false)}
+                applications={dataCandidateApply ? dataCandidateApply : []}
+                jobTitle="Développeur Frontend React Senior"
+                onStatusUpdate={handleStatusUpdate}
+            />
         </>
     );
 };

@@ -107,7 +107,7 @@ export default function Home() {
 
 
   const fetchLastCVData = async () => {
-    if (user?.role === "hr") return
+    if (!user || user?.role === "hr") return
 
     try {
       const token = localStorage.getItem('auth_token');

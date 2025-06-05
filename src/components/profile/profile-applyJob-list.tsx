@@ -12,7 +12,7 @@ import { JobOfferItem } from './profile-applyJob-list-item';
 export const ApplyJob = ({
     companyData,
     handleViewJob,
-    handleViewCandidateApplyJob
+    handleViewCandidateApplyJob,
 }: {
     companyData: CompanyData | null,
     handleViewJob: (jobId: number) => void,
@@ -71,6 +71,7 @@ export const ApplyJob = ({
                             jobOffer={jobOffer}
                             onView={handleViewJob}
                             onShowCandidate={handleViewCandidateApplyJob}
+
                         />
                     ))}
                 </div>

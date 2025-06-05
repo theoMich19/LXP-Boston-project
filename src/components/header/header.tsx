@@ -41,6 +41,7 @@ const Header = () => {
                         isAuthenticated ?
                             (
                                 <div className="flex space-x-4">
+                                    <Button className="hover:shadow-sm hidden md:flex" onClick={() => route.push('/dashboard')}>Dashboard</Button>
                                     <Button className="hidden md:flex " variant="ghost" onClick={() => route.push('/profile')}>
                                         <User className="h-5 w-5" />
                                         <span>Profile</span>
