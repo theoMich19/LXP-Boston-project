@@ -4,13 +4,29 @@ import { Card } from "@/components/ui/card";
 import { useZodValidation } from "@/hooks/useZodValidationAuth";
 import { RegisterFormProps, RegisterFormData, RegisterSubmitData } from "@/types/auth";
 import { User, Mail, EyeOff, Eye, Check, X, Loader2, Shield, ArrowRight, Lock, UserCheck, Building } from "lucide-react";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { registerSchema } from "../schema/register";
 import { getPasswordStrength } from "@/utils/auth";
 import { Input } from "@/components/ui/input";
 import { registerUser } from "@/domains/auth/server/register";
 
-// Available roles definition
+interface Company {
+    id: number;
+    name: string;
+    city: string;
+    country: string;
+    email: string;
+    phone: string;
+    created_at: string;
+    updated_at: string;
+}
+
+interface CompaniesResponse {
+    total: number;
+    data: Company[];
+    message: string;
+}
+
 const ROLES = [
     {
         value: 'candidate',
@@ -35,12 +51,15 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         lastName: '',
         email: '',
         password: '',
-        role: 'candidate' // Default value
+        role: '',
+        company_id: null
     });
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [focusedField, setFocusedField] = useState<string | null>(null);
+    const [companies, setCompanies] = useState<Company[]>([]);
+    const [isLoadingCompanies, setIsLoadingCompanies] = useState<boolean>(false);
 
     const {
         errors,
@@ -51,7 +70,29 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         isValid
     } = useZodValidation(registerSchema, formData);
 
-    const handleInputChange = useCallback((field: keyof RegisterFormData, value: string | boolean) => {
+    const fetchCompanies = useCallback(async () => {
+        setIsLoadingCompanies(true);
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/companies/`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch companies');
+            }
+            const data: CompaniesResponse = await response.json();
+            setCompanies(data.data);
+        } catch (error) {
+            console.error('Error fetching companies:', error);
+        } finally {
+            setIsLoadingCompanies(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (formData.role === 'hr' && companies.length === 0) {
+            fetchCompanies();
+        }
+    }, [formData.role, fetchCompanies, companies.length]);
+
+    const handleInputChange = useCallback((field: keyof RegisterFormData, value: string | boolean | number) => {
         setFormData(prev => ({ ...prev, [field]: value }));
         clearFieldError(field);
 
@@ -96,7 +137,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                     last_name: submitData.lastName.trim(),
                     password: submitData.password,
                     role: submitData.role,
-                    company_id: null
+                    company_id: formData.role === 'hr' ? formData.company_id : null
                 };
 
                 const result = await registerUser(apiData);
@@ -114,6 +155,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
             }
         }
     }, [formData, validateAll, isValid]);
+    console.log("🚀 ~ formData:", formData)
 
     const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
         if (event.key === 'Enter' && !isLoading) {
@@ -125,7 +167,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
     const passwordStrength = useMemo(() =>
         getPasswordStrength(formData.password), [formData.password]
     );
-
     return (
         <Card className={`w-full max-w-md p-8 glass-effect ${className}`}>
             <div className="text-center mb-8">
@@ -133,7 +174,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                     Create Account
                 </h2>
                 <p className="text-muted-foreground">
-                    Join TalentBridge and find your ideal job
+                    Join TalentBridge and find your ideal {formData.role === 'candidate' ? 'job' : 'talents'}
                 </p>
             </div>
 
@@ -202,6 +243,70 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                         </p>
                     )}
                 </div>
+
+                {/* Company selection for HR */}
+                {formData.role === 'hr' && (
+                    <div className="space-y-2">
+                        <label
+                            htmlFor="register-company"
+                            className="text-sm font-medium text-foreground"
+                        >
+                            Select your company <span className="text-destructive">*</span>
+                        </label>
+                        <div className="relative">
+                            <Building
+                                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 pointer-events-none"
+                                aria-hidden="true"
+                            />
+                            <select
+                                id="register-company"
+                                value={formData.company_id}
+                                onChange={(e) => handleInputChange('company_id', Number(e.target.value))}
+                                className={`
+                                    w-full pl-10 pr-4 py-3 border rounded-md bg-background text-foreground
+                                    focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary
+                                    transition-colors appearance-none
+                                    ${errors.companyId
+                                        ? 'border-destructive focus:border-destructive focus:ring-destructive'
+                                        : 'border-input'
+                                    }
+                                    ${isLoadingCompanies ? 'opacity-50 cursor-not-allowed' : ''}
+                                `}
+                                disabled={isLoading || isLoadingCompanies}
+                                aria-invalid={!!errors.companyId}
+                                aria-describedby={errors.companyId ? "register-company-error" : undefined}
+                            >
+                                <option value="">
+                                    {isLoadingCompanies ? 'Loading companies...' : 'Choose a company'}
+                                </option>
+                                {companies.map((company) => (
+                                    <option key={company.id} value={company.id}>
+                                        {company.name} - {company.city}
+                                    </option>
+                                ))}
+                            </select>
+                            {/* Custom dropdown arrow */}
+                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                                {isLoadingCompanies ? (
+                                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                                ) : (
+                                    <svg className="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                )}
+                            </div>
+                        </div>
+                        {errors.companyId && (
+                            <p
+                                id="register-company-error"
+                                className="text-sm text-destructive animate-slide-up"
+                                role="alert"
+                            >
+                                {errors.companyId}
+                            </p>
+                        )}
+                    </div>
+                )}
 
                 {/* First name and last name fields */}
                 <div className="flex flex-row sm:flex-col gap-4">

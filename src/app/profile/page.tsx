@@ -12,8 +12,12 @@ import { ProfileCompletudeCard } from '@/components/profile/profile-completude-c
 import { CVUploadForm } from '@/domains/profile/form/form-cv';
 import { CVEmptyCard, CVExistingCard, CVLoadingSkeleton } from '@/components/profile/profile-cv-card';
 import { ApplyJob } from '@/components/profile/profile-applyJob-list';
+import { CompanyInfoCard } from '@/components/profile/profile-company-info';
+import { JobDetailsModal } from '@/components/jobs/job-modals';
+import { JobMatch } from '@/types/jobs';
+import { CompanyData } from '@/types/company';
 
-const ProfilePage: React.FC = () => {
+const ProfilePage = () => {
     const { user, isAuthenticated } = useUser();
     const [formData, setFormData] = useState<ProfileFormData>({
         first_name: user?.first_name || '',
@@ -21,7 +25,7 @@ const ProfilePage: React.FC = () => {
         email: user?.email || ''
     });
     const [lastCVData, setLastCVData] = useState<UploadedCV | null>(null)
-
+    const [dataCompanyUser, setDataCompanyUser] = useState<CompanyData | null>(null)
     const [isEditing, setIsEditing] = useState(false);
     const [isLoadingCVData, setIsLoadingCVData] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -29,6 +33,8 @@ const ProfilePage: React.FC = () => {
         type: 'success' | 'error' | 'info' | 'warning';
         message: string;
     } | null>(null);
+    const [selectedJob, setSelectedJob] = useState<JobMatch | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [errors] = useState<Record<string, string>>({});
 
@@ -39,7 +45,11 @@ const ProfilePage: React.FC = () => {
                 last_name: user.last_name,
                 email: user.email
             });
-            fetchLastCVData()
+            if (user?.role === "hr") {
+                fetchCompany()
+            } else if (user.role === "candidate") {
+                fetchLastCVData()
+            }
         }
     }, [user]);
 
@@ -113,10 +123,68 @@ const ProfilePage: React.FC = () => {
 
         } catch (err) {
             console.error('Erreur lors du fetch du CV:', err);
-            // setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+        } finally {
+            setIsLoadingCVData(false);
+        }
+    };
+    const fetchCompany = async () => {
+        setIsLoadingCVData(true);
+
+        try {
+            const token = localStorage.getItem('auth_token');
+            if (!token) {
+                throw new Error('Token d\'authentification manquant. Veuillez vous connecter.');
+            }
+            console.log(user)
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/companies/${user?.company_id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Session expirée. Veuillez vous reconnecter.');
+                }
+                if (response.status === 403) {
+                    throw new Error('Accès non autorisé à cette fonctionnalité.');
+                }
+            }
+
+            const data = await response.json();
+            setDataCompanyUser(data)
+        } catch (err) {
+            console.error('Erreur lors du fetch du CV:', err);
 
         } finally {
             setIsLoadingCVData(false);
+        }
+    };
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedJob(null);
+    };
+
+
+    const handleViewJob = (jobId: number) => {
+        const job = dataCompanyUser?.job_offers.find(j => j.id === jobId);
+        if (job) {
+            const jobData = {
+                id: job.id,
+                title: job.title,
+                description: job.description || 'Aucune description disponible',
+                company_id: user?.company_id || 1,
+                salary_min: job.salary_min || '0',
+                salary_max: job.salary_max || '0',
+                status: job.status || 'active',
+                created_at: job.created_at || new Date().toISOString()
+            } as JobMatch;
+
+            setSelectedJob(jobData);
+            setIsModalOpen(true);
         }
     };
 
@@ -133,71 +201,84 @@ const ProfilePage: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-primary-50 via-background to-accent/5">
-            <div className="container mx-auto px-4 py-8 max-w-6xl">
-                {alert && (
-                    <div className="mb-6">
-                        <Alert
-                            title={
-                                alert.type === 'success' ? 'Succès' :
-                                    alert.type === 'error' ? 'Erreur' :
-                                        alert.type === 'warning' ? 'Attention' : 'Information'
+        <>
+            <div className="min-h-screen bg-gradient-to-br from-primary-50 via-background to-accent/5">
+                <div className="container mx-auto px-4 py-8 max-w-6xl">
+                    {alert && (
+                        <div className="mb-6">
+                            <Alert
+                                title={
+                                    alert.type === 'success' ? 'Succès' :
+                                        alert.type === 'error' ? 'Erreur' :
+                                            alert.type === 'warning' ? 'Attention' : 'Information'
+                                }
+                                className={`${alert.type === 'success' ? 'border-success bg-success/10' :
+                                    alert.type === 'error' ? 'border-destructive bg-destructive/10' :
+                                        alert.type === 'warning' ? 'border-warning bg-warning/10' :
+                                            'border-primary bg-primary/10'
+                                    } animate-fade-in`}
+                            >
+                                {alert.message}
+                            </Alert>
+                        </div>
+                    )}
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div className="space-y-6">
+                            <ProfileRecapCard user={user} />
+                            <ProfileCompletudeCard user={user} />
+                        </div>
+
+                        <div className="lg:col-span-2 space-y-6">
+                            <PersonalInfoForm
+                                formData={formData}
+                                isEditing={isEditing}
+                                isLoading={isLoading}
+                                errors={errors}
+                                onInputChange={handleInputChange}
+                                onEdit={() => setIsEditing(true)}
+                                onCancel={handleCancelEdit}
+                                onSave={handleSaveProfile}
+                            />
+                            {
+                                user.role === "hr" && dataCompanyUser ? (
+                                    <>
+                                        <CompanyInfoCard companyData={dataCompanyUser} />
+                                        <ApplyJob companyData={dataCompanyUser} handleViewJob={handleViewJob} />
+                                    </>
+                                ) : null}
+
+                            {
+                                user.role === "candidate" ? (
+                                    <>
+                                        {
+                                            isLoadingCVData ? (
+                                                <CVLoadingSkeleton />
+                                            ) : (
+                                                <> {
+                                                    lastCVData?.has_cv ? (
+                                                        <CVExistingCard lastUploadDate={lastCVData.last_upload_date} />
+                                                    ) : (
+                                                        <CVEmptyCard />
+                                                    )
+                                                }
+                                                </>
+                                            )
+                                        }
+                                        <CVUploadForm fetchLastCVData={fetchLastCVData} />
+                                    </>
+                                ) : (null)
                             }
-                            className={`${alert.type === 'success' ? 'border-success bg-success/10' :
-                                alert.type === 'error' ? 'border-destructive bg-destructive/10' :
-                                    alert.type === 'warning' ? 'border-warning bg-warning/10' :
-                                        'border-primary bg-primary/10'
-                                } animate-fade-in`}
-                        >
-                            {alert.message}
-                        </Alert>
-                    </div>
-                )}
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="space-y-6">
-                        <ProfileRecapCard user={user} />
-                        <ProfileCompletudeCard user={user} />
-                    </div>
-
-                    <div className="lg:col-span-2 space-y-6">
-                        <PersonalInfoForm
-                            formData={formData}
-                            isEditing={isEditing}
-                            isLoading={isLoading}
-                            errors={errors}
-                            onInputChange={handleInputChange}
-                            onEdit={() => setIsEditing(true)}
-                            onCancel={handleCancelEdit}
-                            onSave={handleSaveProfile}
-                        />
-                        {
-                            user.role === "candidate" ? (
-                                <>
-                                    {
-                                        isLoadingCVData ? (
-                                            <CVLoadingSkeleton />
-                                        ) : (
-                                            <> {
-                                                lastCVData?.has_cv ? (
-                                                    <CVExistingCard lastUploadDate={lastCVData.last_upload_date} />
-                                                ) : (
-                                                    <CVEmptyCard />
-                                                )
-                                            }
-                                            </>
-                                        )
-                                    }
-                                    <CVUploadForm fetchLastCVData={fetchLastCVData} />
-                                </>
-                            ) : (
-                                <ApplyJob />
-                            )
-                        }
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <JobDetailsModal
+                job={selectedJob}
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+            />
+        </>
     );
 };
 
