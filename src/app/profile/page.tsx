@@ -15,7 +15,7 @@ import { ApplyJob } from '@/components/profile/profile-applyJob-list';
 import { CompanyInfoCard } from '@/components/profile/profile-company-info';
 import { JobDetailsModal } from '@/components/jobs/job-modals';
 import { JobMatch } from '@/types/jobs';
-import { CompanyData } from '@/types/company';
+import { CompaniesResponse, Company, CompanyData } from '@/types/company';
 import { useRouter } from 'next/navigation';
 
 const ProfilePage = () => {
@@ -38,6 +38,7 @@ const ProfilePage = () => {
     const [selectedJob, setSelectedJob] = useState<JobMatch | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [errors] = useState<Record<string, string>>({});
+    const [companies, setCompanies] = useState<Company[]>([])
     const route = useRouter()
 
     if (!isAuthenticated) {
@@ -52,12 +53,27 @@ const ProfilePage = () => {
                 email: user.email
             });
             if (user?.role === "hr") {
-                fetchCompany()
+                fetchDataCompanyApply()
+                fetchCompanies()
             } else if (user.role === "candidate") {
                 fetchLastCVData()
             }
         }
     }, [user]);
+
+    const fetchCompanies = useCallback(async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/companies/`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch companies');
+            }
+            const data: CompaniesResponse = await response.json();
+            setCompanies(data.data);
+        } catch (error) {
+            console.error('Error fetching companies:', error);
+        } finally {
+        }
+    }, []);
 
     const handleInputChange = useCallback((field: keyof ProfileFormData, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -134,7 +150,7 @@ const ProfilePage = () => {
         }
     };
 
-    const fetchCompany = async () => {
+    const fetchDataCompanyApply = async () => {
         setIsLoadingCVData(true);
 
         try {
@@ -177,8 +193,7 @@ const ProfilePage = () => {
                 throw new Error('Token d\'authentification manquant. Veuillez vous connecter.');
             }
 
-
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/applications/job/${job_offer_id}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/applications/job/${job_offer_id}?status=null`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -321,6 +336,7 @@ const ProfilePage = () => {
             </div>
             <JobDetailsModal
                 job={selectedJob}
+                companies={companies}
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
             />
