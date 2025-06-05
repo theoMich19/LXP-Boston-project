@@ -18,11 +18,15 @@ const Header = () => {
 
     if (pathname === "/auth") {
         return (
-            <h1
-                onClick={() => route.push('/')}
-                className="absolute top-4 left-4 hover:cursor-pointer text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                TalentBridge
-            </h1>
+            <>
+                <h1
+                    onClick={() => route.push('/')}
+                    className="absolute top-4 left-4 hover:cursor-pointer text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                    TalentBridge
+                </h1>
+                <Button className="absolute top-4 right-4" onClick={() => route.push('/dashboard')}>Retour au Dashboard</Button>
+            </>
+
         )
     }
 
