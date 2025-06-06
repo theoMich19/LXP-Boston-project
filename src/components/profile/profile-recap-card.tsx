@@ -22,13 +22,13 @@ const ProfileRecapCard = ({ user }: { user: User }) => {
             <div className="space-y-2">
                 <Badge variant="secondary" className="mb-2">
                     <Shield className="h-3 w-3 mr-1" />
-                    {user.role === 'candidate' ? 'Candidat' : 'Recruteur'}
+                    {user.role === 'candidate' ? 'Candidate' : 'Recruiter'}
                 </Badge>
 
                 {user.created_at && (
                     <div className="flex items-center justify-center text-sm text-muted-foreground">
                         <Calendar className="h-4 w-4 mr-2" />
-                        Membre depuis {new Date(user.created_at).toLocaleDateString('fr-FR', {
+                        Member since {new Date(user.created_at).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long'
                         })}
@@ -38,12 +38,11 @@ const ProfileRecapCard = ({ user }: { user: User }) => {
                 {user.company_id && (
                     <div className="flex items-center justify-center text-sm text-muted-foreground">
                         <Building className="h-4 w-4 mr-2" />
-                        ID Entreprise: {user.company_id}
+                        Company ID: {user.company_id}
                     </div>
                 )}
             </div>
         </Card>
-
     )
 }
 

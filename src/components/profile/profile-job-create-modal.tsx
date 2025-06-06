@@ -14,7 +14,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 
-// Types pour la création d'offre d'emploi
+// Types for job creation
 interface CreateJobFormData {
     title: string;
     description: string;
@@ -28,7 +28,7 @@ interface CreateJobModalProps {
     onJobCreated?: (newJob: any) => void;
 }
 
-// Composant principal de la modal
+// Main modal component
 export const CreateJobModal: React.FC<CreateJobModalProps> = ({
     isOpen,
     onClose,
@@ -46,43 +46,43 @@ export const CreateJobModal: React.FC<CreateJobModalProps> = ({
 
     if (!isOpen) return null;
 
-    // Validation du formulaire
+    // Form validation
     const validateForm = (): boolean => {
         const newErrors: Record<string, string> = {};
 
-        // Validation du titre (minimum 5 caractères)
+        // Title validation (minimum 5 characters)
         if (!formData.title.trim()) {
-            newErrors.title = 'Le titre est requis';
+            newErrors.title = 'Title is required';
         } else if (formData.title.trim().length < 5) {
-            newErrors.title = 'Le titre doit contenir au moins 5 caractères';
+            newErrors.title = 'Title must contain at least 5 characters';
         }
 
-        // Validation de la description (minimum 20 caractères)
+        // Description validation (minimum 20 characters)
         if (!formData.description.trim()) {
-            newErrors.description = 'La description est requise';
+            newErrors.description = 'Description is required';
         } else if (formData.description.trim().length < 20) {
-            newErrors.description = 'La description doit contenir au moins 20 caractères';
+            newErrors.description = 'Description must contain at least 20 characters';
         }
 
         if (formData.salary_min && formData.salary_max) {
             if (Number(formData.salary_min) >= Number(formData.salary_max)) {
-                newErrors.salary_max = 'Le salaire maximum doit être supérieur au minimum';
+                newErrors.salary_max = 'Maximum salary must be higher than minimum';
             }
         }
 
         if (formData.salary_min && Number(formData.salary_min) < 0) {
-            newErrors.salary_min = 'Le salaire minimum doit être positif';
+            newErrors.salary_min = 'Minimum salary must be positive';
         }
 
         if (formData.salary_max && Number(formData.salary_max) < 0) {
-            newErrors.salary_max = 'Le salaire maximum doit être positif';
+            newErrors.salary_max = 'Maximum salary must be positive';
         }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    // Fonction pour créer l'offre d'emploi
+    // Function to create job offer
     const handleCreateJob = async () => {
         if (!validateForm()) return;
 
@@ -92,7 +92,7 @@ export const CreateJobModal: React.FC<CreateJobModalProps> = ({
         try {
             const token = localStorage.getItem('auth_token');
             if (!token) {
-                throw new Error('Token d\'authentification manquant. Veuillez vous connecter.');
+                throw new Error('Authentication token missing. Please log in.');
             }
 
             const requestBody = {
@@ -100,7 +100,6 @@ export const CreateJobModal: React.FC<CreateJobModalProps> = ({
                 description: formData.description.trim(),
                 salary_min: formData.salary_min ? Number(formData.salary_min) : 0,
                 salary_max: formData.salary_max ? Number(formData.salary_max) : 0,
-                tags: [] // Envoyer un tableau vide pour l'instant, car l'API semble attendre des IDs de tags
             };
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/jobs/`, {
@@ -114,15 +113,15 @@ export const CreateJobModal: React.FC<CreateJobModalProps> = ({
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    throw new Error('Session expirée. Veuillez vous reconnecter.');
+                    throw new Error('Session expired. Please log in again.');
                 }
                 if (response.status === 403) {
-                    throw new Error('Accès non autorisé à cette fonctionnalité.');
+                    throw new Error('Unauthorized access to this feature.');
                 }
                 if (response.status === 400) {
                     const errorData = await response.json().catch(() => null);
 
-                    // Gestion des erreurs de validation détaillées
+                    // Detailed validation error handling
                     if (errorData?.detail && Array.isArray(errorData.detail)) {
                         const validationErrors: Record<string, string> = {};
 
@@ -131,11 +130,11 @@ export const CreateJobModal: React.FC<CreateJobModalProps> = ({
                             const message = error.msg;
 
                             if (field === 'title') {
-                                validationErrors.title = 'Le titre doit contenir au moins 5 caractères';
+                                validationErrors.title = 'Title must contain at least 5 characters';
                             } else if (field === 'description') {
-                                validationErrors.description = 'La description doit contenir au moins 20 caractères';
+                                validationErrors.description = 'Description must contain at least 20 characters';
                             } else if (field === 'tags') {
-                                validationErrors.tags = 'Format des compétences invalide';
+                                validationErrors.tags = 'Invalid skills format';
                             } else {
                                 validationErrors[field] = message;
                             }
@@ -145,47 +144,46 @@ export const CreateJobModal: React.FC<CreateJobModalProps> = ({
                         return;
                     }
 
-                    throw new Error(errorData?.message || 'Données invalides.');
+                    throw new Error(errorData?.message || 'Invalid data.');
                 }
 
-                throw new Error(`Erreur HTTP: ${response.status}`);
+                throw new Error(`HTTP Error: ${response.status}`);
             }
 
             const newJob = await response.json();
 
-            // Callback pour notifier le parent
+            // Callback to notify parent
             onJobCreated?.(newJob);
 
-            // Réinitialiser le formulaire
+            // Reset form
             setFormData({
                 title: '',
                 description: '',
                 salary_min: '',
                 salary_max: '',
-                tags: []
             });
 
-            // Fermer la modal
+            // Close modal
             onClose();
 
-            console.log('✅ Offre d\'emploi créée avec succès:', newJob);
+            console.log('✅ Job offer created successfully:', newJob);
 
         } catch (error) {
-            console.error('❌ Erreur lors de la création de l\'offre:', error);
+            console.error('❌ Error creating job offer:', error);
 
             setErrors({
-                general: error instanceof Error ? error.message : 'Erreur lors de la création de l\'offre'
+                general: error instanceof Error ? error.message : 'Error creating job offer'
             });
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Gestion des changements de formulaire
+    // Form change handling
     const handleInputChange = (field: keyof CreateJobFormData, value: string | number) => {
         setFormData(prev => ({ ...prev, [field]: value }));
 
-        // Effacer l'erreur du champ modifié
+        // Clear field error
         if (errors[field]) {
             setErrors(prev => ({ ...prev, [field]: '' }));
         }
@@ -202,10 +200,10 @@ export const CreateJobModal: React.FC<CreateJobModalProps> = ({
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold text-foreground">
-                                Créer une offre d'emploi
+                                Create Job Offer
                             </h2>
                             <p className="text-sm text-muted-foreground">
-                                Ajoutez une nouvelle offre pour attirer les meilleurs talents
+                                Add a new offer to attract the best talent
                             </p>
                         </div>
                     </div>
@@ -214,24 +212,24 @@ export const CreateJobModal: React.FC<CreateJobModalProps> = ({
                     </Button>
                 </div>
 
-                {/* Erreur générale */}
+                {/* General error */}
                 {errors.general && (
                     <div className="mx-6 mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
                         <p className="text-sm text-destructive">{errors.general}</p>
                     </div>
                 )}
 
-                {/* Formulaire */}
+                {/* Form */}
                 <div className="p-6 max-h-[70vh] overflow-y-auto space-y-6">
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-foreground">
-                            Titre du poste <span className="text-destructive">*</span>
+                            Job Title <span className="text-destructive">*</span>
                         </label>
                         <div className="relative">
                             <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
                             <Input
                                 type="text"
-                                placeholder="ex: Développeur Frontend React Senior"
+                                placeholder="e.g. Senior Frontend React Developer"
                                 value={formData.title}
                                 onChange={(e) => handleInputChange('title', e.target.value)}
                                 className={`pl-10 ${errors.title ? 'border-destructive' : ''}`}
@@ -248,11 +246,11 @@ export const CreateJobModal: React.FC<CreateJobModalProps> = ({
                         </div>
                     </div>
 
-                    {/* Salaires */}
+                    {/* Salaries */}
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-foreground">
-                                Salaire minimum (€/an)
+                                Minimum Salary (€/year)
                             </label>
                             <div className="relative">
                                 <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
@@ -273,7 +271,7 @@ export const CreateJobModal: React.FC<CreateJobModalProps> = ({
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-foreground">
-                                Salaire maximum (€/an)
+                                Maximum Salary (€/year)
                             </label>
                             <div className="relative">
                                 <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
@@ -296,12 +294,12 @@ export const CreateJobModal: React.FC<CreateJobModalProps> = ({
                     {/* Description */}
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-foreground">
-                            Description du poste <span className="text-destructive">*</span>
+                            Job Description <span className="text-destructive">*</span>
                         </label>
                         <div className="relative">
                             <FileText className="absolute left-3 top-3 text-muted-foreground h-5 w-5" />
                             <textarea
-                                placeholder="Décrivez les missions, compétences requises, avantages... (minimum 20 caractères)"
+                                placeholder="Describe the missions, required skills, benefits... (minimum 20 characters)"
                                 value={formData.description}
                                 onChange={(e) => handleInputChange('description', e.target.value)}
                                 className={`w-full pl-10 pr-4 py-3 border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors resize-none ${errors.description ? 'border-destructive focus:border-destructive focus:ring-destructive' : 'border-input'}`}
@@ -319,15 +317,15 @@ export const CreateJobModal: React.FC<CreateJobModalProps> = ({
                         </div>
                     </div>
 
-                    {/* Tags/Compétences - Temporairement désactivé */}
+                    {/* Tags/Skills - Temporarily disabled */}
                     <div className="space-y-2 opacity-50">
                         <label className="text-sm font-medium text-foreground">
-                            Compétences requises
+                            Required Skills
                         </label>
                         <div className="p-4 bg-muted/50 rounded-lg border border-dashed">
                             <p className="text-sm text-muted-foreground text-center">
-                                🚧 Section temporairement désactivée<br />
-                                L'API nécessite des IDs de compétences spécifiques
+                                🚧 Section temporarily disabled<br />
+                                API requires specific skill IDs
                             </p>
                         </div>
                         {errors.tags && (
@@ -339,7 +337,7 @@ export const CreateJobModal: React.FC<CreateJobModalProps> = ({
                 {/* Footer */}
                 <div className="flex items-center justify-between p-6 border-t border-border bg-muted/30">
                     <div className="text-sm text-muted-foreground">
-                        <span className="text-destructive">*</span> Champs obligatoires
+                        <span className="text-destructive">*</span> Required fields
                     </div>
                     <div className="flex space-x-3">
                         <Button
@@ -347,7 +345,7 @@ export const CreateJobModal: React.FC<CreateJobModalProps> = ({
                             onClick={onClose}
                             disabled={isLoading}
                         >
-                            Annuler
+                            Cancel
                         </Button>
                         <Button
                             onClick={handleCreateJob}
@@ -356,12 +354,12 @@ export const CreateJobModal: React.FC<CreateJobModalProps> = ({
                             {isLoading ? (
                                 <div className="flex items-center space-x-2">
                                     <Loader2 className="w-4 h-4 animate-spin" />
-                                    <span>Création...</span>
+                                    <span>Creating...</span>
                                 </div>
                             ) : (
                                 <div className="flex items-center space-x-2">
                                     <Plus className="w-4 h-4" />
-                                    <span>Créer l'offre</span>
+                                    <span>Create Offer</span>
                                 </div>
                             )}
                         </Button>

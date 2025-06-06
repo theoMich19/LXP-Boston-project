@@ -8,7 +8,6 @@ import { Card } from '@/components/ui/card';
 import { CompanyData } from '@/types/company';
 import { JobOfferItem } from './profile-applyJob-list-item';
 
-
 export const ApplyJob = ({
     companyData,
     handleViewJob,
@@ -28,15 +27,15 @@ export const ApplyJob = ({
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-2xl font-bold text-foreground">
-                        Mes offres d'emploi
+                        My Job Offers
                     </h2>
                     <p className="text-muted-foreground mt-1">
-                        Gérez vos offres d'emploi et suivez les candidatures
+                        Manage your job offers and track applications
                     </p>
                 </div>
                 <Button onClick={() => setIsModalJobOpen(true)}>
                     <Plus className="h-4 w-4 mr-2" />
-                    Nouvelle offre
+                    New Offer
                 </Button>
             </div>
 
@@ -48,15 +47,15 @@ export const ApplyJob = ({
                         </div>
                         <div>
                             <h3 className="text-lg font-semibold text-foreground mb-2">
-                                Aucune offre d'emploi
+                                No job offers
                             </h3>
                             <p className="text-muted-foreground">
-                                Commencez par créer votre première offre d'emploi pour attirer les meilleurs talents.
+                                Start by creating your first job offer to attract the best talent.
                             </p>
                         </div>
-                        <Button onClick={handleCreateJob} className="mt-4">
+                        <Button onClick={() => setIsModalJobOpen(true)} className="mt-4">
                             <Plus className="h-4 w-4 mr-2" />
-                            Créer ma première offre
+                            Create my first offer
                         </Button>
                     </div>
                 </Card>
@@ -68,7 +67,6 @@ export const ApplyJob = ({
                             jobOffer={jobOffer}
                             onView={handleViewJob}
                             onShowCandidate={handleViewCandidateApplyJob}
-
                         />
                     ))}
                 </div>
@@ -76,4 +74,3 @@ export const ApplyJob = ({
         </div>
     );
 };
-

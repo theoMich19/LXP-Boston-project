@@ -1,11 +1,11 @@
 import { PasswordRequirement, PasswordStrength } from "@/types/auth";
 
 const PASSWORD_REQUIREMENTS: Omit<PasswordRequirement, "met">[] = [
-  { label: "Au moins 8 caractères", minLength: 8 },
-  { label: "Une minuscule (a-z)", regex: /[a-z]/ },
-  { label: "Une majuscule (A-Z)", regex: /[A-Z]/ },
-  { label: "Un chiffre (0-9)", regex: /\d/ },
-  { label: "Un caractère spécial (!@#$...)", regex: /[!@#$%^&*(),.?":{}|<>]/ },
+  { label: "At least 8 characters", minLength: 8 },
+  { label: "One lowercase letter (a-z)", regex: /[a-z]/ },
+  { label: "One uppercase letter (A-Z)", regex: /[A-Z]/ },
+  { label: "One number (0-9)", regex: /\d/ },
+  { label: "One special character (!@#$...)", regex: /[!@#$%^&*(),.?":{}|<>]/ },
 ];
 
 export const getPasswordStrength = (password: string): PasswordStrength => {
@@ -37,16 +37,16 @@ export const getPasswordStrength = (password: string): PasswordStrength => {
   let color: string;
 
   if (strength <= 20) {
-    label = "Très faible";
+    label = "Very Weak";
     color = "bg-destructive";
   } else if (strength <= 40) {
-    label = "Faible";
+    label = "Weak";
     color = "bg-destructive";
   } else if (strength <= 60) {
-    label = "Moyen";
+    label = "Fair";
     color = "bg-warning";
   } else if (strength <= 80) {
-    label = "Bon";
+    label = "Good";
     color = "bg-primary";
   } else {
     label = "Excellent";

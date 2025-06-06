@@ -1,6 +1,6 @@
 import { toast, ToastOptions, Id } from "react-toastify";
 
-// Configuration par défaut pour tous les toasts
+// Default configuration for all toasts
 const defaultOptions: ToastOptions = {
   position: "top-right",
   autoClose: 5000,
@@ -11,7 +11,7 @@ const defaultOptions: ToastOptions = {
   progress: undefined,
 };
 
-// Options spécifiques pour chaque type de toast
+// Specific options for each type of toast
 const toastOptions = {
   info: {
     ...defaultOptions,
@@ -43,35 +43,35 @@ const toastOptions = {
 };
 
 export const toastUtils = {
-  // Toast d'information
+  // Info toast
   info: (message: string, options?: Partial<ToastOptions>): Id => {
     return toast.info(message, { ...toastOptions.info, ...options });
   },
 
-  // Toast de succès
+  // Success toast
   success: (message: string, options?: Partial<ToastOptions>): Id => {
     return toast.success(message, { ...toastOptions.success, ...options });
   },
 
-  // Toast d'avertissement
+  // Warning toast
   warn: (message: string, options?: Partial<ToastOptions>): Id => {
     return toast.warn(message, { ...toastOptions.warning, ...options });
   },
 
-  // Toast d'erreur
+  // Error toast
   error: (message: string, options?: Partial<ToastOptions>): Id => {
     return toast.error(message, { ...toastOptions.error, ...options });
   },
 
-  // Toast de chargement
+  // Loading toast
   loading: (
-    message: string = "Chargement en cours...",
+    message: string = "Loading...",
     options?: Partial<ToastOptions>
   ): Id => {
     return toast.loading(message, { ...toastOptions.loading, ...options });
   },
 
-  // Mettre à jour un toast de chargement avec un succès
+  // Update loading toast with success
   updateLoadingToSuccess: (
     toastId: Id,
     message: string,
@@ -88,7 +88,7 @@ export const toastUtils = {
     });
   },
 
-  // Mettre à jour un toast de chargement avec une erreur
+  // Update loading toast with error
   updateLoadingToError: (
     toastId: Id,
     message: string,
@@ -105,17 +105,17 @@ export const toastUtils = {
     });
   },
 
-  // Fermer un toast spécifique
+  // Close a specific toast
   dismiss: (toastId?: Id): void => {
     toast.dismiss(toastId);
   },
 
-  // Fermer tous les toasts
+  // Close all toasts
   dismissAll: (): void => {
     toast.dismiss();
   },
 
-  // Toast pour les promesses (gère automatiquement loading/success/error)
+  // Toast for promises (automatically handles loading/success/error)
   promise: <T>(
     promise: Promise<T>,
     messages: {
@@ -128,43 +128,41 @@ export const toastUtils = {
     return toast.promise(
       promise,
       {
-        pending: messages.pending || "Chargement en cours...",
-        success: messages.success || "Opération réussie !",
-        error: messages.error || "Une erreur est survenue",
+        pending: messages.pending || "Loading...",
+        success: messages.success || "Operation successful!",
+        error: messages.error || "An error occurred",
       },
       { ...defaultOptions, ...options }
     );
   },
 };
 
-// Fonctions utilitaires pour les cas d'usage courants
+// Utility functions for common use cases
 export const showApiError = (error: any): Id => {
   const message =
-    error?.response?.data?.message ||
-    error?.message ||
-    "Une erreur est survenue";
+    error?.response?.data?.message || error?.message || "An error occurred";
   return toastUtils.error(message);
 };
 
 export const showNetworkError = (): Id => {
   return toastUtils.error(
-    "Erreur de connexion. Vérifiez votre connexion internet."
+    "Connection error. Please check your internet connection."
   );
 };
 
 export const showValidationError = (
-  message: string = "Veuillez vérifier les champs du formulaire"
+  message: string = "Please check the form fields"
 ): Id => {
   return toastUtils.warn(message);
 };
 
-export const showSaveSuccess = (entity: string = "élément"): Id => {
-  return toastUtils.success(`${entity} sauvegardé avec succès !`);
+export const showSaveSuccess = (entity: string = "item"): Id => {
+  return toastUtils.success(`${entity} saved successfully!`);
 };
 
-export const showDeleteSuccess = (entity: string = "élément"): Id => {
-  return toastUtils.success(`${entity} supprimé avec succès !`);
+export const showDeleteSuccess = (entity: string = "item"): Id => {
+  return toastUtils.success(`${entity} deleted successfully!`);
 };
 
-// Export par défaut
+// Default export
 export default toastUtils;

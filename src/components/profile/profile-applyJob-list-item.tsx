@@ -26,7 +26,7 @@ export const JobOfferItem = ({
     };
 
     const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('fr-FR', {
+        return new Date(dateString).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'short'
         });
@@ -35,11 +35,11 @@ export const JobOfferItem = ({
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'active':
-                return <Badge variant="default" className="bg-success text-success-foreground">Actif</Badge>;
+                return <Badge variant="default" className="bg-success text-success-foreground">Active</Badge>;
             case 'paused':
-                return <Badge variant="secondary">En pause</Badge>;
+                return <Badge variant="secondary">Paused</Badge>;
             case 'closed':
-                return <Badge variant="outline">Fermé</Badge>;
+                return <Badge variant="outline">Closed</Badge>;
             default:
                 return <Badge variant="outline">{status}</Badge>;
         }
@@ -63,7 +63,7 @@ export const JobOfferItem = ({
                             </span>
                             <span className="flex items-center space-x-1">
                                 <Calendar className="h-4 w-4" />
-                                <span>Publié le {formatDate(jobOffer.created_at ? jobOffer.created_at : "")}</span>
+                                <span>Published on {formatDate(jobOffer.created_at ? jobOffer.created_at : "")}</span>
                             </span>
                         </div>
                     </div>
@@ -80,7 +80,7 @@ export const JobOfferItem = ({
                     <div className="flex items-center space-x-2">
                         <div className="w-2 h-2 bg-success rounded-full"></div>
                         <span className="text-sm text-muted-foreground">
-                            {jobOffer.status === 'active' ? 'Visible aux candidats' : 'Non visible'}
+                            {jobOffer.status === 'active' ? 'Visible to candidates' : 'Not visible'}
                         </span>
                     </div>
                     <div className="flex space-x-2">
@@ -90,7 +90,7 @@ export const JobOfferItem = ({
                             onClick={() => onView?.(jobOffer.id)}
                         >
                             <Eye className="h-4 w-4 mr-1" />
-                            Voir
+                            View
                         </Button>
                         <Button
                             variant="outline"
@@ -98,7 +98,7 @@ export const JobOfferItem = ({
                             onClick={() => onShowCandidate?.(jobOffer.id)}
                         >
                             <Eye className="h-4 w-4 mr-1" />
-                            Voir la liste de candidats
+                            View Candidates
                         </Button>
                         {/* <Button
                             variant="ghost"
@@ -106,7 +106,7 @@ export const JobOfferItem = ({
                             onClick={() => onEdit?.(jobOffer.id)}
                         >
                             <Edit className="h-4 w-4 mr-1" />
-                            Modifier
+                            Edit
                         </Button> */}
                     </div>
                 </div>

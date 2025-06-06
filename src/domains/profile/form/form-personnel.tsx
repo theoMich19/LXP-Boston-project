@@ -38,12 +38,12 @@ export const PersonalInfoForm = ({
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-semibold flex items-center">
                     <User className="h-5 w-5 mr-2" />
-                    Informations personnelles
+                    Personal Information
                 </h3>
                 {!isEditing && (
                     <Button variant="outline" onClick={onEdit}>
                         <Edit className="h-4 w-4 mr-2" />
-                        Modifier
+                        Edit
                     </Button>
                 )}
             </div>
@@ -51,7 +51,7 @@ export const PersonalInfoForm = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground">
-                        Prénom <span className="text-destructive">*</span>
+                        First Name <span className="text-destructive">*</span>
                     </label>
                     {isEditing ? (
                         <Input
@@ -70,7 +70,7 @@ export const PersonalInfoForm = ({
 
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground">
-                        Nom <span className="text-destructive">*</span>
+                        Last Name <span className="text-destructive">*</span>
                     </label>
                     {isEditing ? (
                         <Input
@@ -114,18 +114,18 @@ export const PersonalInfoForm = ({
             {isEditing && (
                 <div className="flex justify-end space-x-3 mt-6 pt-6 border-t">
                     <Button variant="outline" onClick={onCancel} disabled={isLoading}>
-                        Annuler
+                        Cancel
                     </Button>
                     <Button onClick={onSave} disabled={isLoading}>
                         {isLoading ? (
                             <>
                                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                Sauvegarde...
+                                Saving...
                             </>
                         ) : (
                             <>
                                 <Save className="h-4 w-4 mr-2" />
-                                Sauvegarder
+                                Save
                             </>
                         )}
                     </Button>

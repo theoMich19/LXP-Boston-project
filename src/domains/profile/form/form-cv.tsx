@@ -28,7 +28,7 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { errors, isValid, validateFile, clearErrors } = useCVValidation();
 
-    // Fonction pour formater la taille des fichiers
+    // Function to format file size
     const formatFileSize = (bytes: number): string => {
         if (bytes === 0) return '0 B';
         const k = 1024;
@@ -44,7 +44,7 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
         try {
             const token = localStorage.getItem('auth_token');
             if (!token) {
-                throw new Error('Token d\'authentification manquant');
+                throw new Error('Authentication token missing');
             }
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/cvs/`, {
                 method: 'POST',
@@ -58,12 +58,12 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
                 const errorData = await response.json().catch(() => ({}));
 
                 if (response.status === 422) {
-                    let errorMessage = 'Erreur de validation des données';
+                    let errorMessage = 'Data validation error';
 
                     if (errorData.detail) {
                         if (Array.isArray(errorData.detail)) {
                             errorMessage = errorData.detail.map((err: any) =>
-                                `${err.loc ? err.loc.join('.') : 'Champ'}: ${err.msg}`
+                                `${err.loc ? err.loc.join('.') : 'Field'}: ${err.msg}`
                             ).join(', ');
                         } else {
                             errorMessage = errorData.detail;
@@ -73,18 +73,18 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
                     throw new Error(errorMessage);
                 }
 
-                throw new Error(errorData.message || `Erreur ${response.status}: ${response.statusText}`);
+                throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
             }
 
             const data = await response.json();
             fetchLastCVData()
         } catch (error) {
-            console.error('Erreur upload CV:', error);
+            console.error('CV upload error:', error);
             throw error;
         }
     };
 
-    // Gestion de la sélection de fichier
+    // Handle file selection
     const handleFileSelect = useCallback((file: File) => {
         setSelectedFile(file);
         setUploadSuccess(false);
@@ -95,7 +95,7 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
         }
     }, [validateFile]);
 
-    // Gestion du changement de fichier via input
+    // Handle file change via input
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -103,7 +103,7 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
         }
     };
 
-    // Gestion du drag & drop
+    // Handle drag & drop
     const handleDrag = useCallback((e: React.DragEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -125,7 +125,7 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
         }
     }, [handleFileSelect]);
 
-    // Soumission du formulaire
+    // Form submission
     const handleSubmit = useCallback(async () => {
         if (!selectedFile || !isValid) {
             return;
@@ -136,7 +136,7 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
         setAlert(null);
 
         try {
-            // Simulation de progression
+            // Progress simulation
             const progressInterval = setInterval(() => {
                 setUploadProgress(prev => Math.min(prev + 10, 90));
             }, 150);
@@ -146,18 +146,18 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
             clearInterval(progressInterval);
             setUploadProgress(100);
 
-            // Succès
+            // Success
             setTimeout(() => {
                 setUploadSuccess(true);
                 setAlert({
                     type: 'success',
-                    message: `CV "${selectedFile.name}" uploadé avec succès !`
+                    message: `CV "${selectedFile.name}" uploaded successfully!`
                 });
                 setUploadProgress(0);
                 setSelectedFile(null);
                 clearErrors();
 
-                // Reset l'input file
+                // Reset file input
                 if (fileInputRef.current) {
                     fileInputRef.current.value = '';
                 }
@@ -166,7 +166,7 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
         } catch (error) {
             setAlert({
                 type: 'error',
-                message: error instanceof Error ? error.message : 'Erreur lors de l\'upload du CV'
+                message: error instanceof Error ? error.message : 'Error uploading CV'
             });
             setUploadProgress(0);
         } finally {
@@ -174,7 +174,7 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
         }
     }, [selectedFile, isValid, clearErrors]);
 
-    // Reset du formulaire
+    // Reset form
     const handleReset = useCallback(() => {
         setSelectedFile(null);
         setUploadSuccess(false);
@@ -185,7 +185,7 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
         }
     }, [clearErrors]);
 
-    // Auto-dismiss des alertes
+    // Auto-dismiss alerts
     React.useEffect(() => {
         if (alert) {
             const timeout = setTimeout(() => setAlert(null), 7000);
@@ -197,14 +197,14 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
         <Card className="p-6">
             <h3 className="text-xl font-semibold mb-6 flex items-center">
                 <FileText className="h-5 w-5 mr-2" />
-                Uploader un CV
+                Upload Resume
             </h3>
 
             {/* Alert */}
             {alert && (
                 <div className="mb-4">
                     <Alert
-                        title={alert.type === 'success' ? 'Succès' : alert.type === 'error' ? 'Erreur' : 'Attention'}
+                        title={alert.type === 'success' ? 'Success' : alert.type === 'error' ? 'Error' : 'Warning'}
                         className={`${alert.type === 'success' ? 'border-success bg-success/10' :
                             alert.type === 'error' ? 'border-destructive bg-destructive/10' :
                                 'border-warning bg-warning/10'
@@ -215,7 +215,7 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
                 </div>
             )}
 
-            {/* Zone d'upload */}
+            {/* Upload zone */}
             <div
                 onDragEnter={handleDrag}
                 onDragLeave={handleDrag}
@@ -242,7 +242,7 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
                     <div className="space-y-4">
                         <Loader2 className="h-12 w-12 mx-auto animate-spin text-primary" />
                         <div>
-                            <p className="text-lg font-medium mb-2">Upload en cours...</p>
+                            <p className="text-lg font-medium mb-2">Uploading...</p>
                             <Progress value={uploadProgress} className="h-2 max-w-xs mx-auto" />
                             <p className="text-sm text-muted-foreground mt-1">{uploadProgress}%</p>
                         </div>
@@ -253,11 +253,11 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
                             <Check className="h-8 w-8 text-success" />
                         </div>
                         <div>
-                            <p className="text-lg font-medium text-success">CV uploadé avec succès !</p>
-                            <p className="text-muted-foreground">Vous pouvez uploader un autre CV</p>
+                            <p className="text-lg font-medium text-success">Resume uploaded successfully!</p>
+                            <p className="text-muted-foreground">You can upload another resume</p>
                         </div>
                         <Button variant="outline" onClick={handleReset}>
-                            Uploader un autre CV
+                            Upload another resume
                         </Button>
                     </div>
                 ) : selectedFile && isValid ? (
@@ -266,7 +266,7 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
                             <FileText className="h-8 w-8 text-success" />
                         </div>
                         <div>
-                            <p className="text-lg font-medium text-success">Fichier sélectionné</p>
+                            <p className="text-lg font-medium text-success">File selected</p>
                             <p className="text-foreground font-medium">{selectedFile.name}</p>
                             <p className="text-muted-foreground">{formatFileSize(selectedFile.size)}</p>
                         </div>
@@ -278,25 +278,25 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
                         </div>
                         <div>
                             <p className="text-lg font-medium">
-                                {dragActive ? 'Déposez votre CV ici' : 'Glissez-déposez votre CV ou cliquez pour parcourir'}
+                                {dragActive ? 'Drop your resume here' : 'Drag and drop your resume or click to browse'}
                             </p>
-                            <p className="text-muted-foreground">PDF, DOC ou DOCX (max 5MB)</p>
+                            <p className="text-muted-foreground">PDF, DOC or DOCX (max 5MB)</p>
                         </div>
                         <Button variant="outline">
                             <FileText className="h-4 w-4 mr-2" />
-                            Choisir un fichier
+                            Choose a file
                         </Button>
                     </div>
                 )}
             </div>
 
-            {/* Erreurs de validation */}
+            {/* Validation errors */}
             {errors.length > 0 && (
                 <div className="mb-4 p-4 bg-destructive/5 border border-destructive/20 rounded-lg">
                     <div className="flex items-start space-x-2">
                         <AlertCircle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
                         <div>
-                            <p className="font-medium text-destructive mb-1">Erreurs de validation :</p>
+                            <p className="font-medium text-destructive mb-1">Validation errors:</p>
                             <ul className="list-disc list-inside space-y-1">
                                 {errors.map((error, index) => (
                                     <li key={index} className="text-sm text-destructive">{error}</li>
@@ -307,11 +307,11 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
                 </div>
             )}
 
-            {/* Boutons d'action */}
+            {/* Action buttons */}
             {selectedFile && !uploadSuccess && (
                 <div className="flex justify-between items-center">
                     <Button variant="outline" onClick={handleReset} disabled={isUploading}>
-                        Annuler
+                        Cancel
                     </Button>
                     <Button
                         onClick={handleSubmit}
@@ -321,29 +321,29 @@ export const CVUploadForm = ({ fetchLastCVData }: { fetchLastCVData: () => void 
                         {isUploading ? (
                             <Button>
                                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                Upload...
+                                Uploading...
                             </Button>
                         ) : (
                             <Button>
                                 <Upload className="h-4 w-4 mr-2" />
-                                Uploader
+                                Upload
                             </Button>
                         )}
                     </Button>
                 </div>
             )}
 
-            {/* Message informatif */}
+            {/* Informational message */}
             {!selectedFile && !uploadSuccess && (
                 <div className="mt-4 p-4 bg-primary/5 rounded-lg border border-primary/20">
                     <div className="flex items-start space-x-3">
                         <AlertCircle className="h-5 w-5 text-primary mt-0.5" />
                         <div>
                             <p className="text-sm font-medium text-primary">
-                                Uploadez votre CV pour améliorer votre visibilité
+                                Upload your resume to improve your visibility
                             </p>
                             <p className="text-xs text-primary/70 mt-1">
-                                Les profils avec CV reçoivent 3x plus de contacts des recruteurs
+                                Profiles with resumes receive 3x more contacts from recruiters
                             </p>
                         </div>
                     </div>

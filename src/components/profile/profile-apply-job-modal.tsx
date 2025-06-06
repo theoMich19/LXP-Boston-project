@@ -54,18 +54,18 @@ const ApplicationItem = ({
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'pending':
-                return <Badge variant="secondary" className="bg-warning/10 text-warning border-warning/20">En attente</Badge>;
+                return <Badge variant="secondary" className="bg-warning/10 text-warning border-warning/20">Pending</Badge>;
             case 'accepted':
-                return <Badge variant="default" className="bg-success text-success-foreground">Accepté</Badge>;
+                return <Badge variant="default" className="bg-success text-success-foreground">Accepted</Badge>;
             case 'rejected':
-                return <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">Refusé</Badge>;
+                return <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">Rejected</Badge>;
             default:
                 return <Badge variant="outline">{status}</Badge>;
         }
     };
 
     const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('fr-FR', {
+        return new Date(dateString).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'long',
             year: 'numeric',
@@ -83,7 +83,6 @@ const ApplicationItem = ({
         }
     };
 
-
     return (
         <Card className="p-4 hover:shadow-md transition-shadow">
             <div className="space-y-4">
@@ -100,7 +99,7 @@ const ApplicationItem = ({
                             </div>
                             <div className="flex items-center space-x-1 text-sm text-muted-foreground mt-1">
                                 <Calendar className="h-4 w-4" />
-                                <span>Candidature du {formatDate(application.applied_at)}</span>
+                                <span>Applied on {formatDate(application.applied_at)}</span>
                             </div>
                         </div>
                     </div>
@@ -123,7 +122,7 @@ const ApplicationItem = ({
                                 className="border-destructive/20 text-destructive hover:bg-destructive/10"
                             >
                                 <XCircle className="h-4 w-4 mr-1" />
-                                Refuser
+                                Reject
                             </Button>
                             <Button
                                 size="sm"
@@ -132,7 +131,7 @@ const ApplicationItem = ({
                                 className="bg-success hover:bg-success/90 text-success-foreground"
                             >
                                 <Check className="h-4 w-4 mr-1" />
-                                Accepter
+                                Accept
                             </Button>
                         </div>
                     )}
@@ -142,7 +141,7 @@ const ApplicationItem = ({
     );
 };
 
-// Composant principal de la modal
+// Main modal component
 export const ApplicationsModal: React.FC<ApplicationsModalProps> = ({
     isOpen,
     onClose,
@@ -153,7 +152,6 @@ export const ApplicationsModal: React.FC<ApplicationsModalProps> = ({
 }) => {
     console.log("🚀 ~ applications:", applications)
     if (!isOpen) return null;
-
 
     const getStatusCounts = () => {
         return {
@@ -173,10 +171,10 @@ export const ApplicationsModal: React.FC<ApplicationsModalProps> = ({
                 <div className="flex items-center justify-between p-6 border-b border-border">
                     <div>
                         <h2 className="text-xl font-semibold text-foreground">
-                            Candidatures{jobTitle && ` - ${jobTitle}`}
+                            Applications{jobTitle && ` - ${jobTitle}`}
                         </h2>
                         <p className="text-sm text-muted-foreground mt-1">
-                            {statusCounts.total} candidature{statusCounts.total > 1 ? 's' : ''} au total
+                            {statusCounts.total} application{statusCounts.total !== 1 ? 's' : ''} total
                         </p>
                     </div>
                     <Button variant="ghost" size="sm" onClick={onClose}>
@@ -184,7 +182,7 @@ export const ApplicationsModal: React.FC<ApplicationsModalProps> = ({
                     </Button>
                 </div>
 
-                {/* Liste des candidatures */}
+                {/* Applications list */}
                 <div className="p-6 max-h-[60vh] overflow-y-auto">
                     {isLoading ? (
                         <div className="space-y-4">
@@ -210,13 +208,13 @@ export const ApplicationsModal: React.FC<ApplicationsModalProps> = ({
                         //     </div>
                         //     <h3 className="text-lg font-semibold text-foreground mb-2">
                         //         {searchTerm || statusFilter !== 'all'
-                        //             ? 'Aucune candidature trouvée'
-                        //             : 'Aucune candidature'}
+                        //             ? 'No applications found'
+                        //             : 'No applications'}
                         //     </h3>
                         //     <p className="text-muted-foreground">
                         //         {searchTerm || statusFilter !== 'all'
-                        //             ? 'Essayez de modifier vos filtres de recherche.'
-                        //             : 'Les candidatures apparaîtront ici une fois que des candidats auront postulé.'}
+                        //             ? 'Try modifying your search filters.'
+                        //             : 'Applications will appear here once candidates have applied.'}
                         //     </p>
                         // </div>
                         <></>
@@ -237,10 +235,10 @@ export const ApplicationsModal: React.FC<ApplicationsModalProps> = ({
                 {/* Footer */}
                 <div className="flex items-center justify-between p-6 border-t border-border bg-muted/30">
                     <div className="text-sm text-muted-foreground">
-                        {applications.length} candidature{applications.length > 1 ? 's' : ''} affichée{applications.length > 1 ? 's' : ''}
+                        {applications.length} application{applications.length !== 1 ? 's' : ''} displayed
                     </div>
                     <Button variant="outline" onClick={onClose}>
-                        Fermer
+                        Close
                     </Button>
                 </div>
             </div>

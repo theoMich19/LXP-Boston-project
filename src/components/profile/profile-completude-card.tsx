@@ -15,17 +15,18 @@ export const ProfileCompletudeCard = ({ user }: { user: UserType }) => {
 
         return completeness;
     }, [user]);
+
     return (
         <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4 flex items-center">
                 <User className="h-5 w-5 mr-2" />
-                Complétude du profil
+                Profile Completeness
             </h3>
 
             <div className="space-y-4">
                 <div>
                     <div className="flex justify-between text-sm mb-2">
-                        <span>Progression</span>
+                        <span>Progress</span>
                         <span>{getProfileCompleteness()}%</span>
                     </div>
                     <Progress value={getProfileCompleteness()} className="h-2" />
@@ -33,7 +34,7 @@ export const ProfileCompletudeCard = ({ user }: { user: UserType }) => {
 
                 <div className="space-y-2 text-sm">
                     <div className="flex items-center justify-between">
-                        <span>Prénom</span>
+                        <span>First Name</span>
                         {user.first_name ? (
                             <Check className="h-4 w-4 text-success" />
                         ) : (
@@ -41,7 +42,7 @@ export const ProfileCompletudeCard = ({ user }: { user: UserType }) => {
                         )}
                     </div>
                     <div className="flex items-center justify-between">
-                        <span>Nom</span>
+                        <span>Last Name</span>
                         {user.last_name ? (
                             <Check className="h-4 w-4 text-success" />
                         ) : (
@@ -60,5 +61,4 @@ export const ProfileCompletudeCard = ({ user }: { user: UserType }) => {
             </div>
         </Card>
     )
-
 }

@@ -4,7 +4,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { FileText, Upload, CheckCircle, Calendar, AlertCircle } from 'lucide-react';
 
-// Composant pour l'état de chargement
 export const CVLoadingSkeleton = () => (
     <Card className="p-6">
         <div className="flex items-center space-x-4">
@@ -17,7 +16,6 @@ export const CVLoadingSkeleton = () => (
     </Card>
 );
 
-// Composant pour CV existant
 export const CVExistingCard = ({ lastUploadDate }) => (
     <Card className="p-6 border-success/20 bg-success/5">
         <div className="flex items-start space-x-4">
@@ -30,15 +28,15 @@ export const CVExistingCard = ({ lastUploadDate }) => (
             <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-2">
                     <FileText className="h-4 w-4 text-success" />
-                    <h3 className="font-semibold text-foreground">CV enregistré</h3>
+                    <h3 className="font-semibold text-foreground">CV Saved</h3>
                     <Badge variant="success" className="text-xs">
-                        Actif
+                        Active
                     </Badge>
                 </div>
 
                 <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                     <Calendar className="h-4 w-4" />
-                    <span>Dernière mise à jour le {new Date(lastUploadDate).toLocaleDateString('fr-FR', {
+                    <span>Last updated on {new Date(lastUploadDate).toLocaleDateString('en-US', {
                         day: 'numeric',
                         month: 'long',
                         year: 'numeric'
@@ -46,14 +44,13 @@ export const CVExistingCard = ({ lastUploadDate }) => (
                 </div>
 
                 <p className="text-sm text-success mt-2">
-                    Votre CV est prêt à être utilisé pour vos candidatures
+                    Your CV is ready to be used for your applications
                 </p>
             </div>
         </div>
     </Card>
 );
 
-// Composant pour aucun CV
 export const CVEmptyCard = () => (
     <Card className="p-6 border-warning/20 bg-warning/5">
         <div className="flex items-start space-x-4">
@@ -66,19 +63,19 @@ export const CVEmptyCard = () => (
             <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-2">
                     <Upload className="h-4 w-4 text-warning" />
-                    <h3 className="font-semibold text-foreground">Aucun CV enregistré</h3>
+                    <h3 className="font-semibold text-foreground">No CV Saved</h3>
                     <Badge variant="outline" className="text-xs border-warning text-warning">
-                        Action requise
+                        Action Required
                     </Badge>
                 </div>
 
                 <p className="text-sm text-muted-foreground mb-3">
-                    Ajoutez votre CV pour améliorer vos chances d'être contacté par les recruteurs
+                    Add your CV to improve your chances of being contacted by recruiters
                 </p>
 
                 <div className="flex items-center space-x-1 text-xs text-warning">
                     <div className="w-2 h-2 bg-warning rounded-full"></div>
-                    <span>Complétez votre profil pour un meilleur matching</span>
+                    <span>Complete your profile for better matching</span>
                 </div>
             </div>
         </div>

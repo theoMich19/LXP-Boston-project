@@ -1,5 +1,4 @@
-import { Briefcase, Building, Calendar, Edit, Mail, MapPin, Phone, TrendingUp, Users } from "lucide-react";
-import { Button } from "../ui/button";
+import { Briefcase, Building, Calendar, Mail, MapPin, Phone, } from "lucide-react";
 import { Card } from "../ui/card";
 import { CompanyData } from "@/types/company";
 
@@ -7,7 +6,7 @@ export const CompanyInfoCard = ({ companyData }: { companyData: CompanyData }) =
     if (!companyData) return null;
 
     const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('fr-FR', {
+        return new Date(dateString).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'long',
             year: 'numeric'
@@ -45,7 +44,7 @@ export const CompanyInfoCard = ({ companyData }: { companyData: CompanyData }) =
                     <div className="flex items-center space-x-3">
                         <Phone className="h-5 w-5 text-muted-foreground" />
                         <div>
-                            <p className="text-sm text-muted-foreground">Téléphone</p>
+                            <p className="text-sm text-muted-foreground">Phone</p>
                             <p className="font-medium">{companyData.phone}</p>
                         </div>
                     </div>
@@ -54,15 +53,15 @@ export const CompanyInfoCard = ({ companyData }: { companyData: CompanyData }) =
                     <div className="flex items-center space-x-3">
                         <Calendar className="h-5 w-5 text-muted-foreground" />
                         <div>
-                            <p className="text-sm text-muted-foreground">Membre depuis</p>
+                            <p className="text-sm text-muted-foreground">Member since</p>
                             <p className="font-medium">{formatDate(companyData.created_at)}</p>
                         </div>
                     </div>
                     <div className="flex items-center space-x-3">
                         <Briefcase className="h-5 w-5 text-muted-foreground" />
                         <div>
-                            <p className="text-sm text-muted-foreground">Offres actives</p>
-                            <p className="font-medium">{companyData.job_offers?.length || 0} postes</p>
+                            <p className="text-sm text-muted-foreground">Active offers</p>
+                            <p className="font-medium">{companyData.job_offers?.length || 0} positions</p>
                         </div>
                     </div>
                 </div>
