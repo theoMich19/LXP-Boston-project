@@ -151,6 +151,7 @@ export const ApplicationsModal: React.FC<ApplicationsModalProps> = ({
     onStatusUpdate,
     isLoading = false
 }) => {
+    console.log("🚀 ~ applications:", applications)
     if (!isOpen) return null;
 
 

@@ -17,9 +17,10 @@ import { JobDetailsModal } from '@/components/jobs/job-modals';
 import { JobMatch } from '@/types/jobs';
 import { CompaniesResponse, Company, CompanyData } from '@/types/company';
 import { ApplicationsModal } from '@/components/profile/profile-apply-job-modal';
+import { CreateJobModal } from '@/components/profile/profile-job-create-modal';
 
 const ProfilePage = () => {
-    const { user, isAuthenticated } = useUser();
+    const { user, isAuthenticated, updateUser } = useUser();
     const [formData, setFormData] = useState<ProfileFormData>({
         first_name: user?.first_name || '',
         last_name: user?.last_name || '',
@@ -40,24 +41,10 @@ const ProfilePage = () => {
     const [errors] = useState<Record<string, string>>({});
     const [companies, setCompanies] = useState<Company[]>([]);
     const [isModalApplyOpen, setIsModalApplyOpen] = useState<boolean>(false);
+    const [isModalJobOpen, setIsModalJobOpen] = useState<boolean>(false);
+    console.log("🚀 ~ ProfilePage ~ isModalJobOpen:", isModalJobOpen)
 
 
-
-    useEffect(() => {
-        if (user) {
-            setFormData({
-                first_name: user.first_name,
-                last_name: user.last_name,
-                email: user.email
-            });
-            if (user?.role === "hr") {
-                fetchDataCompanyApply()
-                fetchCompanies()
-            } else if (user.role === "candidate") {
-                fetchLastCVData()
-            }
-        }
-    }, [user]);
 
     const fetchCompanies = useCallback(async () => {
         try {
@@ -82,22 +69,72 @@ const ProfilePage = () => {
         setAlert(null);
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            const token = localStorage.getItem('auth_token');
+            if (!token) {
+                throw new Error('Token d\'authentification manquant. Veuillez vous connecter.');
+            }
+
+            if (!user?.id) {
+                throw new Error('ID utilisateur manquant.');
+            }
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/candidates/${user.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    first_name: formData.first_name.trim(),
+                    last_name: formData.last_name.trim(),
+                    email: formData.email.trim().toLowerCase()
+                })
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Session expirée. Veuillez vous reconnecter.');
+                }
+                if (response.status === 403) {
+                    throw new Error('Accès non autorisé à cette fonctionnalité.');
+                }
+                if (response.status === 404) {
+                    throw new Error('Profil utilisateur non trouvé.');
+                }
+                if (response.status === 400) {
+                    const errorData = await response.json().catch(() => null);
+                    throw new Error(errorData?.message || 'Données invalides.');
+                }
+
+                throw new Error(`Erreur HTTP: ${response.status}`);
+            }
+
+            const updatedUserData = await response.json();
+
+            // 🎯 MISE À JOUR DU CONTEXTE
+            updateUser({
+                first_name: updatedUserData.first_name || formData.first_name,
+                last_name: updatedUserData.last_name || formData.last_name,
+                email: updatedUserData.email || formData.email
+            });
 
             setIsEditing(false);
             setAlert({
                 type: 'success',
                 message: 'Profil mis à jour avec succès !'
             });
+
         } catch (error) {
+            console.error('Erreur lors de la mise à jour du profil:', error);
+
             setAlert({
                 type: 'error',
-                message: 'Erreur lors de la mise à jour du profil'
+                message: error instanceof Error ? error.message : 'Erreur lors de la mise à jour du profil'
             });
         } finally {
             setIsLoading(false);
         }
-    }, [formData]);
+    }, [formData, user?.id, updateUser]);
 
     const handleCancelEdit = useCallback(() => {
         if (user) {
@@ -245,6 +282,36 @@ const ProfilePage = () => {
         setIsModalApplyOpen(true)
     }
 
+    const handleJobCreated = (newJob: any) => {
+        console.log('✅ Nouvelle offre créée:', newJob);
+        if (user) {
+            if (user?.role === "hr") {
+                fetchDataCompanyApply()
+                fetchCompanies()
+            } else if (user.role === "candidate") {
+                fetchLastCVData()
+            }
+        }
+    };
+
+
+
+    useEffect(() => {
+        if (user) {
+            setFormData({
+                first_name: user.first_name,
+                last_name: user.last_name,
+                email: user.email
+            });
+            if (user?.role === "hr") {
+                fetchDataCompanyApply()
+                fetchCompanies()
+            } else if (user.role === "candidate") {
+                fetchLastCVData()
+            }
+        }
+    }, [user]);
+
     const handleStatusUpdate = async (applicationId: number, newStatus: 'accepted' | 'rejected' | 'pending') => {
         try {
             const token = localStorage.getItem('auth_token');
@@ -355,6 +422,7 @@ const ProfilePage = () => {
                                         <CompanyInfoCard companyData={dataCompanyUser} />
                                         <ApplyJob
                                             companyData={dataCompanyUser}
+                                            setIsModalJobOpen={setIsModalJobOpen}
                                             handleViewJob={handleViewJob}
                                             handleViewCandidateApplyJob={handleViewCandidateApplyJob} />
                                     </>
@@ -397,6 +465,12 @@ const ProfilePage = () => {
                 applications={dataCandidateApply ? dataCandidateApply : []}
                 jobTitle="Développeur Frontend React Senior"
                 onStatusUpdate={handleStatusUpdate}
+            />
+
+            <CreateJobModal
+                isOpen={isModalJobOpen}
+                onClose={() => setIsModalJobOpen(false)}
+                onJobCreated={handleJobCreated}
             />
         </>
     );

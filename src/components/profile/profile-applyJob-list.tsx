@@ -12,17 +12,14 @@ import { JobOfferItem } from './profile-applyJob-list-item';
 export const ApplyJob = ({
     companyData,
     handleViewJob,
+    setIsModalJobOpen,
     handleViewCandidateApplyJob,
 }: {
     companyData: CompanyData | null,
     handleViewJob: (jobId: number) => void,
+    setIsModalJobOpen: (status: boolean) => void,
     handleViewCandidateApplyJob: (jobId: number) => void
 }) => {
-
-    const handleCreateJob = () => {
-        console.log('Create new job');
-        // Logique pour créer une nouvelle offre
-    };
 
     const jobOffers = companyData?.job_offers || [];
 
@@ -37,7 +34,7 @@ export const ApplyJob = ({
                         Gérez vos offres d'emploi et suivez les candidatures
                     </p>
                 </div>
-                <Button onClick={handleCreateJob}>
+                <Button onClick={() => setIsModalJobOpen(true)}>
                     <Plus className="h-4 w-4 mr-2" />
                     Nouvelle offre
                 </Button>
