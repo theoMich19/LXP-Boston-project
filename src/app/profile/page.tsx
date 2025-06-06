@@ -44,8 +44,6 @@ const ProfilePage = () => {
     const [isModalJobOpen, setIsModalJobOpen] = useState<boolean>(false);
     console.log("🚀 ~ ProfilePage ~ isModalJobOpen:", isModalJobOpen)
 
-
-
     const fetchCompanies = useCallback(async () => {
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/companies/`);
@@ -71,11 +69,11 @@ const ProfilePage = () => {
         try {
             const token = localStorage.getItem('auth_token');
             if (!token) {
-                throw new Error('Token d\'authentification manquant. Veuillez vous connecter.');
+                throw new Error('Authentication token missing. Please log in.');
             }
 
             if (!user?.id) {
-                throw new Error('ID utilisateur manquant.');
+                throw new Error('User ID missing.');
             }
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/candidates/${user.id}`, {
@@ -93,25 +91,25 @@ const ProfilePage = () => {
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    throw new Error('Session expirée. Veuillez vous reconnecter.');
+                    throw new Error('Session expired. Please log in again.');
                 }
                 if (response.status === 403) {
-                    throw new Error('Accès non autorisé à cette fonctionnalité.');
+                    throw new Error('Unauthorized access to this feature.');
                 }
                 if (response.status === 404) {
-                    throw new Error('Profil utilisateur non trouvé.');
+                    throw new Error('User profile not found.');
                 }
                 if (response.status === 400) {
                     const errorData = await response.json().catch(() => null);
-                    throw new Error(errorData?.message || 'Données invalides.');
+                    throw new Error(errorData?.message || 'Invalid data.');
                 }
 
-                throw new Error(`Erreur HTTP: ${response.status}`);
+                throw new Error(`HTTP Error: ${response.status}`);
             }
 
             const updatedUserData = await response.json();
 
-            // 🎯 MISE À JOUR DU CONTEXTE
+            // 🎯 UPDATE CONTEXT
             updateUser({
                 first_name: updatedUserData.first_name || formData.first_name,
                 last_name: updatedUserData.last_name || formData.last_name,
@@ -121,15 +119,15 @@ const ProfilePage = () => {
             setIsEditing(false);
             setAlert({
                 type: 'success',
-                message: 'Profil mis à jour avec succès !'
+                message: 'Profile updated successfully!'
             });
 
         } catch (error) {
-            console.error('Erreur lors de la mise à jour du profil:', error);
+            console.error('Error updating profile:', error);
 
             setAlert({
                 type: 'error',
-                message: error instanceof Error ? error.message : 'Erreur lors de la mise à jour du profil'
+                message: error instanceof Error ? error.message : 'Error updating profile'
             });
         } finally {
             setIsLoading(false);
@@ -154,7 +152,7 @@ const ProfilePage = () => {
         try {
             const token = localStorage.getItem('auth_token');
             if (!token) {
-                throw new Error('Token d\'authentification manquant. Veuillez vous connecter.');
+                throw new Error('Authentication token missing. Please log in.');
             }
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/cvs/last-upload`, {
@@ -167,19 +165,19 @@ const ProfilePage = () => {
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    throw new Error('Session expirée. Veuillez vous reconnecter.');
+                    throw new Error('Session expired. Please log in again.');
                 }
                 if (response.status === 403) {
-                    throw new Error('Accès non autorisé à cette fonctionnalité.');
+                    throw new Error('Unauthorized access to this feature.');
                 }
-                throw new Error(`Erreur HTTP: ${response.status}`);
+                throw new Error(`HTTP Error: ${response.status}`);
             }
 
             const data = await response.json();
             setLastCVData(data);
 
         } catch (err) {
-            console.error('Erreur lors du fetch du CV:', err);
+            console.error('Error fetching CV:', err);
         } finally {
             setIsLoadingCVData(false);
         }
@@ -191,7 +189,7 @@ const ProfilePage = () => {
         try {
             const token = localStorage.getItem('auth_token');
             if (!token) {
-                throw new Error('Token d\'authentification manquant. Veuillez vous connecter.');
+                throw new Error('Authentication token missing. Please log in.');
             }
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/companies/${user?.company_id}`, {
@@ -204,17 +202,17 @@ const ProfilePage = () => {
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    throw new Error('Session expirée. Veuillez vous reconnecter.');
+                    throw new Error('Session expired. Please log in again.');
                 }
                 if (response.status === 403) {
-                    throw new Error('Accès non autorisé à cette fonctionnalité.');
+                    throw new Error('Unauthorized access to this feature.');
                 }
             }
 
             const data = await response.json();
             setDataCompanyUser(data)
         } catch (err) {
-            console.error('Erreur lors du fetch du CV:', err);
+            console.error('Error fetching company data:', err);
 
         } finally {
             setIsLoadingCVData(false);
@@ -225,7 +223,7 @@ const ProfilePage = () => {
         try {
             const token = localStorage.getItem('auth_token');
             if (!token) {
-                throw new Error('Token d\'authentification manquant. Veuillez vous connecter.');
+                throw new Error('Authentication token missing. Please log in.');
             }
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/applications/job/${job_offer_id}`, {
@@ -238,17 +236,17 @@ const ProfilePage = () => {
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    throw new Error('Session expirée. Veuillez vous reconnecter.');
+                    throw new Error('Session expired. Please log in again.');
                 }
                 if (response.status === 403) {
-                    throw new Error('Accès non autorisé à cette fonctionnalité.');
+                    throw new Error('Unauthorized access to this feature.');
                 }
             }
 
             const data = await response.json();
             setDataCandidateApply(data)
         } catch (err) {
-            console.error('Erreur lors du fetch du CV:', err);
+            console.error('Error fetching candidate applications:', err);
 
         }
     };
@@ -257,14 +255,13 @@ const ProfilePage = () => {
         setSelectedJob(null);
     };
 
-
     const handleViewJob = (jobId: number) => {
         const job = dataCompanyUser?.job_offers.find(j => j.id === jobId);
         if (job) {
             const jobData = {
                 id: job.id,
                 title: job.title,
-                description: job.description || 'Aucune description disponible',
+                description: job.description || 'No description available',
                 company_id: user?.company_id || 1,
                 salary_min: job.salary_min || '0',
                 salary_max: job.salary_max || '0',
@@ -283,7 +280,7 @@ const ProfilePage = () => {
     }
 
     const handleJobCreated = (newJob: any) => {
-        console.log('✅ Nouvelle offre créée:', newJob);
+        console.log('✅ New job created:', newJob);
         if (user) {
             if (user?.role === "hr") {
                 fetchDataCompanyApply()
@@ -293,8 +290,6 @@ const ProfilePage = () => {
             }
         }
     };
-
-
 
     useEffect(() => {
         if (user) {
@@ -316,7 +311,7 @@ const ProfilePage = () => {
         try {
             const token = localStorage.getItem('auth_token');
             if (!token) {
-                throw new Error('Token d\'authentification manquant. Veuillez vous connecter.');
+                throw new Error('Authentication token missing. Please log in.');
             }
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/applications/${applicationId}/status`, {
@@ -332,20 +327,20 @@ const ProfilePage = () => {
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    throw new Error('Session expirée. Veuillez vous reconnecter.');
+                    throw new Error('Session expired. Please log in again.');
                 }
                 if (response.status === 403) {
-                    throw new Error('Accès non autorisé à cette fonctionnalité.');
+                    throw new Error('Unauthorized access to this feature.');
                 }
                 if (response.status === 404) {
-                    throw new Error('Candidature non trouvée.');
+                    throw new Error('Application not found.');
                 }
-                throw new Error(`Erreur HTTP: ${response.status}`);
+                throw new Error(`HTTP Error: ${response.status}`);
             }
 
             const data = await response.json();
 
-            // Mettre à jour l'état local des candidatures
+            // Update local application state
             setDataCandidateApply(prev =>
                 prev.map(app =>
                     app.id === applicationId
@@ -354,14 +349,14 @@ const ProfilePage = () => {
                 )
             );
 
-            // Optionnel : afficher un message de succès
-            console.log('Statut mis à jour avec succès:', data);
+            // Optional: display success message
+            console.log('Status updated successfully:', data);
 
             return data;
 
         } catch (err) {
-            console.error('Erreur lors de la mise à jour du statut:', err);
-            throw err; // Re-throw pour que le composant puisse gérer l'erreur
+            console.error('Error updating status:', err);
+            throw err; // Re-throw so the component can handle the error
         }
     };
 
@@ -370,7 +365,7 @@ const ProfilePage = () => {
             <div className="min-h-screen bg-gradient-to-br from-primary-50 via-background to-accent/5 flex items-center justify-center">
                 <Card className="p-8 text-center">
                     <Loader2 className="h-8 w-8 mx-auto animate-spin text-primary mb-4" />
-                    <p className="text-muted-foreground">Chargement du profil...</p>
+                    <p className="text-muted-foreground">Loading profile...</p>
                 </Card>
             </div>
         );
@@ -384,9 +379,9 @@ const ProfilePage = () => {
                         <div className="mb-6">
                             <Alert
                                 title={
-                                    alert.type === 'success' ? 'Succès' :
-                                        alert.type === 'error' ? 'Erreur' :
-                                            alert.type === 'warning' ? 'Attention' : 'Information'
+                                    alert.type === 'success' ? 'Success' :
+                                        alert.type === 'error' ? 'Error' :
+                                            alert.type === 'warning' ? 'Warning' : 'Information'
                                 }
                                 className={`${alert.type === 'success' ? 'border-success bg-success/10' :
                                     alert.type === 'error' ? 'border-destructive bg-destructive/10' :
@@ -463,7 +458,7 @@ const ProfilePage = () => {
                 isOpen={isModalApplyOpen}
                 onClose={() => setIsModalApplyOpen(false)}
                 applications={dataCandidateApply ? dataCandidateApply : []}
-                jobTitle="Développeur Frontend React Senior"
+                jobTitle="Frontend React Developer Senior"
                 onStatusUpdate={handleStatusUpdate}
             />
 

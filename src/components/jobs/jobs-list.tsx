@@ -64,15 +64,15 @@ export const JobsList: React.FC<ListJobsProps> = ({
                         </div>
                         <div>
                             <h3 className="text-lg font-semibold text-foreground mb-2">
-                                Aucun emploi trouvé
+                                No jobs found
                             </h3>
                             <p className="text-muted-foreground">
-                                Nous n'avons trouvé aucun emploi correspondant à vos critères. Essayez d'ajuster vos filtres de recherche.
+                                We couldn't find any jobs matching your criteria. Try adjusting your search filters.
                             </p>
                         </div>
                         <Button variant="outline" className="mt-4">
                             <ExternalLink className="h-4 w-4 mr-2" />
-                            Parcourir tous les emplois
+                            Browse all jobs
                         </Button>
                     </div>
                 </Card>
@@ -85,7 +85,7 @@ export const JobsList: React.FC<ListJobsProps> = ({
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-2xl font-bold text-foreground">
-                        Offres correspondantes
+                        Matching Offers
                     </h2>
                     <p className="text-muted-foreground mt-1">
                         {jobsData.message}
@@ -110,7 +110,7 @@ export const JobsList: React.FC<ListJobsProps> = ({
             {jobsData.total_matches > jobsData.data.length && (
                 <div className="text-center pt-6">
                     <Button variant="outline" size="lg">
-                        Charger plus d'emplois
+                        Load more jobs
                     </Button>
                 </div>
             )}

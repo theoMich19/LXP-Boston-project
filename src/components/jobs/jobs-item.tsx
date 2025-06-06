@@ -156,7 +156,7 @@ export const JobItem: React.FC<JobItemProps> = ({
                         {user?.role === "candidate" ? (
                             <>
                                 {
-                                    isJobsApply ? <Button disabled>already applied </Button> : (
+                                    isJobsApply ? <Button disabled>Already Applied</Button> : (
                                         <Button
                                             size="sm"
                                             onClick={() => onApply?.(id)}

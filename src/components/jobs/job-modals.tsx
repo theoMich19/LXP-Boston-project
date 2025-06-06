@@ -31,6 +31,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
     companies
 }) => {
     if (!isOpen || !job) return null;
+
     const getCompanyData = (company_id: number) => {
         const data = companies.find(company => company.id === company_id)
         return data
@@ -44,7 +45,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
     };
 
     const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('fr-FR', {
+        return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
@@ -56,11 +57,10 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
         const jobDate = new Date(dateString);
         const diffInDays = Math.floor((now.getTime() - jobDate.getTime()) / (1000 * 60 * 60 * 24));
 
-        if (diffInDays === 0) return "Aujourd'hui";
-        if (diffInDays === 1) return "Hier";
-        return `Il y a ${diffInDays} jours`;
+        if (diffInDays === 0) return "Today";
+        if (diffInDays === 1) return "Yesterday";
+        return `${diffInDays} days ago`;
     };
-
 
     const formatDescription = (description: string) => {
         return description.split('\r\n').map((line, index) => (
@@ -130,11 +130,11 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                                     variant={job.status === 'active' ? 'default' : 'secondary'}
                                     className="capitalize"
                                 >
-                                    {job.status === 'active' ? 'Actif' : job.status}
+                                    {job.status === 'active' ? 'Active' : job.status}
                                 </Badge>
                                 <span className="text-sm text-muted-foreground flex items-center">
                                     <Calendar className="h-4 w-4 mr-1" />
-                                    Publié le {formatDate(job?.created_at)}
+                                    Published on {formatDate(job?.created_at)}
                                 </span>
                             </div>
                         </div>
@@ -143,7 +143,7 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                         <div>
                             <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center">
                                 <Info className="h-5 w-5 mr-2" />
-                                Description du poste
+                                Job Description
                             </h2>
                             <div className="prose prose-sm max-w-none text-muted-foreground leading-relaxed bg-muted/20 rounded-lg p-4">
                                 {formatDescription(job.description)}
@@ -154,13 +154,13 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                         <div className="bg-muted/30 rounded-lg p-4">
                             <h3 className="font-semibold text-foreground mb-3 flex items-center">
                                 <Building className="h-5 w-5 mr-2" />
-                                Informations sur l'entreprise
+                                Company Information
                             </h3>
                             <div className="flex items-center space-x-3">
                                 <Avatar />
                                 <div>
                                     <p className="font-medium text-foreground">{company.name}</p>
-                                    <p className="text-sm text-muted-foreground">Identifiant: {job.company_id}</p>
+                                    <p className="text-sm text-muted-foreground">Company ID: {job.company_id}</p>
                                 </div>
                             </div>
                         </div>
@@ -170,24 +170,24 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                             <div className="space-y-3">
                                 <h3 className="font-semibold text-foreground flex items-center">
                                     <DollarSign className="h-5 w-5 mr-2" />
-                                    Détails du poste
+                                    Job Details
                                 </h3>
                                 <div className="bg-muted/20 rounded-lg p-4 space-y-3">
                                     <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Salaire:</span>
+                                        <span className="text-muted-foreground">Salary:</span>
                                         <span className="font-medium">{formatSalary(job.salary_min, job.salary_max)}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Type de contrat:</span>
-                                        <span className="font-medium">CDI</span>
+                                        <span className="text-muted-foreground">Contract Type:</span>
+                                        <span className="font-medium">Full-time</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Localisation:</span>
-                                        <span className="font-medium">Remote / Hybride</span>
+                                        <span className="text-muted-foreground">Location:</span>
+                                        <span className="font-medium">Remote / Hybrid</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Niveau requis:</span>
-                                        <span className="font-medium">2-5 ans d'expérience</span>
+                                        <span className="text-muted-foreground">Experience Level:</span>
+                                        <span className="font-medium">2-5 years experience</span>
                                     </div>
                                 </div>
                             </div>
@@ -195,25 +195,25 @@ export const JobDetailsModal: React.FC<JobDetailsModalProps> = ({
                             <div className="space-y-3">
                                 <h3 className="font-semibold text-foreground flex items-center">
                                     <Info className="h-5 w-5 mr-2" />
-                                    Informations générales
+                                    General Information
                                 </h3>
                                 <div className="bg-muted/20 rounded-lg p-4 space-y-3">
                                     <div className="flex justify-between">
-                                        <span className="text-muted-foreground">ID de l'offre:</span>
+                                        <span className="text-muted-foreground">Job ID:</span>
                                         <span className="font-mono font-medium">#{job.id}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Statut:</span>
+                                        <span className="text-muted-foreground">Status:</span>
                                         <Badge variant="outline" className="text-xs">
-                                            {job.status === 'active' ? 'Actif' : job.status}
+                                            {job.status === 'active' ? 'Active' : job.status}
                                         </Badge>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Date de publication:</span>
+                                        <span className="text-muted-foreground">Publication Date:</span>
                                         <span className="font-medium">{getTimeAgo(job.created_at)}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Date complète:</span>
+                                        <span className="text-muted-foreground">Full Date:</span>
                                         <span className="font-medium text-xs">{formatDate(job.created_at)}</span>
                                     </div>
                                 </div>
