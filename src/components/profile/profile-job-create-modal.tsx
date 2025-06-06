@@ -166,7 +166,6 @@ export const CreateJobModal: React.FC<CreateJobModalProps> = ({
             // Close modal
             onClose();
 
-            console.log('✅ Job offer created successfully:', newJob);
 
         } catch (error) {
             console.error('❌ Error creating job offer:', error);

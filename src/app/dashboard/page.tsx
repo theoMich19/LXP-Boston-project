@@ -199,7 +199,6 @@ export default function Home() {
         }
 
         const data = await response.json();
-        console.log('Application sent successfully:', data);
 
         if (jobsData) {
           const updatedJobsData: JobsApiResponse = {

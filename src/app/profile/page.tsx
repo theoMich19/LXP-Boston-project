@@ -42,7 +42,6 @@ const ProfilePage = () => {
     const [companies, setCompanies] = useState<Company[]>([]);
     const [isModalApplyOpen, setIsModalApplyOpen] = useState<boolean>(false);
     const [isModalJobOpen, setIsModalJobOpen] = useState<boolean>(false);
-    console.log("🚀 ~ ProfilePage ~ isModalJobOpen:", isModalJobOpen)
 
     const fetchCompanies = useCallback(async () => {
         try {
@@ -280,7 +279,6 @@ const ProfilePage = () => {
     }
 
     const handleJobCreated = (newJob: any) => {
-        console.log('✅ New job created:', newJob);
         if (user) {
             if (user?.role === "hr") {
                 fetchDataCompanyApply()
@@ -350,7 +348,6 @@ const ProfilePage = () => {
             );
 
             // Optional: display success message
-            console.log('Status updated successfully:', data);
 
             return data;
 
