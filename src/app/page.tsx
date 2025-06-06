@@ -1,40 +1,13 @@
-"use client";
+"use client"
+import { usePathname, useRouter } from 'next/navigation';
 
-import Image from "next/image";
-import { toastUtils, showApiError, showSaveSuccess } from '@/utils/toast';
 
-const testToast = () => {
+export default function Default() {
+  const pathname = usePathname()
+  const route = useRouter()
+  if (pathname === "/") {
+    route.push('/dashboard')
+  }
 
-  // Utilisation basique
-  toastUtils.info("Information importante");
-  toastUtils.success("Opération réussie !");
-  toastUtils.warn("Attention à ceci");
-  toastUtils.error("Une erreur est survenue");
-
-  // Toast de chargement
-  const loadingToast = toastUtils.loading("Sauvegarde en cours...");
-  // Plus tard...
-  toastUtils.updateLoadingToSuccess(loadingToast, "Sauvegardé avec succès !");
-
-  // Gestion automatique des promesses
-  toastUtils.promise(
-    fetch('/api/data'),
-    {
-      pending: 'Chargement des données...',
-      success: 'Données chargées !',
-      error: 'Erreur lors du chargement'
-    }
-  );
-
-  // Fonctions utilitaires
-  showApiError("truc muche erreur");
-  showSaveSuccess("utilisateur");
-}
-
-export default function Home() {
-  return (
-    <div>
-      <button className="bg-blue-500 text-white p-2 rounded-md" onClick={testToast}>Test Toast</button>
-    </div>
-  );
+  return (<></>)
 }
